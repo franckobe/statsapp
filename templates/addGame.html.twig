@@ -1,0 +1,14 @@
+{% extends "base.html.twig" %}
+
+{% block main %}
+    <h1>Ajouter une feuille de stats</h1>
+
+    <form action="{{ path('addGameFile') }}" method="POST" id="formAddGameFile">
+        <input type="file" name="files[]" multiple="multiple" accept="application/pdf" required />
+        <button>Envoyer</button>
+    </form>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/addGame.js') }}"></script>
+{% endblock %}
