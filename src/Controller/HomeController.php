@@ -13,8 +13,8 @@ use Symfony\Component\Routing\Attribute\Route;
 class HomeController extends AbstractController
 {
 
-    #[Route('/', name: 'home')]
-    #[Template(template: 'home.html.twig')]
+    #[Route('/', name: 'playersAverages')]
+    #[Template(template: 'playersAverages.html.twig')]
     public function index(GameStatsRepository $gameStatsRepository): array
     {
 
@@ -83,7 +83,7 @@ class HomeController extends AbstractController
     }
 
     #[Route('/match-par-match', name: 'games', methods: ['GET'])]
-    #[Template(template: 'home.html.twig')]
+    #[Template(template: 'playersAverages.html.twig')]
     public function games(): array
     {
         return [

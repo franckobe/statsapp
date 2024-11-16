@@ -2,7 +2,7 @@
 
 {% block main %}
     <h1>{{ averages|length }} joueurs</h1>
-    <div class="w-full max-w-full overflow-x-auto">
+    <div class="w-full max-w-full overflow-x-auto overflow-y-hidden">
         <table class="stats-table">
             <thead>
             <tr>
@@ -10,13 +10,13 @@
                 <th>Nb</th>
                 <th>Min</th>
                 <th>PTS</th>
-                <th>2PTS</th>
+                <th colspan="2">2PTS</th>
                 <th>2PTS%</th>
-                <th>3PTS</th>
+                <th colspan="2">3PTS</th>
                 <th>3PTS%</th>
-                <th>TOT</th>
+                <th colspan="2">TOT</th>
                 <th>TOT%</th>
-                <th>LF</th>
+                <th colspan="2">LF</th>
                 <th>LF%</th>
                 <th>REBO</th>
                 <th>REBD</th>
@@ -39,13 +39,17 @@
                     <td>{{ average.gamesPlayed }}</td>
                     <td>{{ average.minutes }}</td>
                     <td>{{ average.points }}</td>
-                    <td>{{ average.fgm2 }} / {{ average.fga2 }}</td>
+                    <td>{{ average.fgm2 }}</td>
+                    <td>{{ average.fga2 }}</td>
                     <td>{{ average.fg2Percentage }}</td>
-                    <td>{{ average.fgm3 }} / {{ average.fga3 }}</td>
+                    <td>{{ average.fgm3 }}</td>
+                    <td>{{ average.fga3 }}</td>
                     <td>{{ average.fg3Percentage }}</td>
-                    <td>{{ average.fgmTot }} / {{ average.fgaTot }}</td>
+                    <td>{{ average.fgmTot }}</td>
+                    <td>{{ average.fgaTot }}</td>
                     <td>{{ average.fgTotPercentage }}</td>
-                    <td>{{ average.ftm }} / {{ average.fta }}</td>
+                    <td>{{ average.ftm }}</td>
+                    <td>{{ average.fta }}</td>
                     <td>{{ average.ftPercentage }}</td>
                     <td>{{ average.offensiveRebound }}</td>
                     <td>{{ average.defensiveRebound }}</td>

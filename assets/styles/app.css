@@ -30,15 +30,29 @@ h1 {
 .stats-table {
     @apply whitespace-nowrap w-full
 }
-.stats-table tr {
-    @apply border border-purple-200
+.stats-table thead {
+    @apply bg-gray-900
 }
 .stats-table th, .stats-table td {
-    @apply border border-purple-200 p-1
+    @apply relative border border-purple-200 p-1
+}
+.stats-table tbody tr {
+    @apply hover:bg-purple-900
 }
 .stats-table tbody th {
     @apply text-left
 }
 .stats-table tbody td {
     @apply text-center
+}
+
+.stats-table tbody td:hover::after {
+    content: '';
+    height: 10000px;
+    left: 0;
+    position: absolute;
+    top: -5000px;
+    width: 100%;
+    z-index: -1;
+    @apply bg-purple-900/40
 }
