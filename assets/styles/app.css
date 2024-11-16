@@ -26,3 +26,19 @@ main {
 h1 {
     @apply text-3xl mb-4
 }
+
+.stats-table {
+    @apply whitespace-nowrap w-full
+}
+.stats-table tr {
+    @apply border border-purple-200
+}
+.stats-table th, .stats-table td {
+    @apply border border-purple-200 p-1
+}
+.stats-table tbody th {
+    @apply text-left
+}
+.stats-table tbody td {
+    @apply text-center
+}

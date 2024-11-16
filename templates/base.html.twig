@@ -26,6 +26,9 @@
                         <a href="{{ path('games') }}" class="{{ app.request.get('_route') is same as 'games' ? 'bg-purple-900' : '' }}">Match par match</a>
                     </li>
                     <li>
+                        <a href="{{ path('players') }}" class="{{ app.request.get('_route') is same as 'players' ? 'bg-purple-900' : '' }}">Joueurs</a>
+                    </li>
+                    <li>
                         <a href="{{ path('addGame') }}" class="{{ app.request.get('_route') is same as 'addGame' ? 'bg-purple-900' : '' }}">Ajouter</a>
                     </li>
                 </ul>

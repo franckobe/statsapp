@@ -33,6 +33,11 @@ class Player
         $this->gameStats = new ArrayCollection();
     }
 
+    public static function hydrate(int $id, string $name): self
+    {
+        return (new self())->setId($id)->setName($name);
+    }
+
     public function getId(): ?int
     {
         return $this->id;

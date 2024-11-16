@@ -31,6 +31,7 @@ class GameFileTool
     private function process(): void
     {
         $this->fileContent = str_replace(array('Istres Sport BC', 'Istres Sports Basket Club'), 'Istres Sports BC', $this->fileContent);
+        $this->fileContent = str_replace(array('Elias Agba Adouma', 'Ahmed Ibrahim'), array('Elias Agba Yadouma', 'Ibrahim Ahmed'), $this->fileContent);
 
         $lines = explode("\n", $this->fileContent);
 
