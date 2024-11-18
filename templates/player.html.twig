@@ -39,8 +39,8 @@
             </thead>
             <tbody>
             {% for stat in player.games %}
-                <tr class="">
-                    <th>{{ stat.opponentTeam.name }}</th>
+                <tr>
+                    <th><a href="{{ path('teamPlayersStats', {teamId: stat.opponentTeam.id, method: 'AVG'}) }}">{{ stat.opponentTeam.name }}</a></th>
                     <td>{{ stat.home ? 'D' : 'E' }}</td>
                     <td>{{ stat.gamesPlayed }}</td>
                     <td>{{ stat.minutes }}</td>
