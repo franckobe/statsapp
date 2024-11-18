@@ -62,6 +62,19 @@ h1 {
 .table caption {
     @apply mb-4 text-3xl text-left
 }
+.table-orderable thead th {
+    @apply cursor-pointer
+}
+.table-orderable thead th::after {
+    content: '';
+    @apply ml-1
+}
+.table-orderable thead th[data-order="ASC"]::after {
+    content: '⬆️';
+}
+.table-orderable thead th[data-order="DESC"]::after {
+    content: '⬇️';
+}
 
 .btn-group {
     @apply flex rounded border border-purple-200 overflow-hidden
@@ -79,7 +92,7 @@ h1 {
 .stats-table {
     @apply whitespace-nowrap
 }
-.stats-table tbody td {
+.stats-table tbody td, .stats-table tfoot td {
     @apply text-center
 }
 .stats-table tr > *:first-child {
@@ -97,7 +110,7 @@ h1 {
 .stats-table tbody tr:hover * {
     @apply bg-purple-900
 }
-.stats-table tbody td:hover::after {
+.stats-table tbody td:hover::after, .stats-table tfoot td:hover::after {
     content: '';
     height: 10000px;
     left: 0;

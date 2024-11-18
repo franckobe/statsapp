@@ -6,17 +6,17 @@
         <thead>
         <tr>
             <th>Nom</th>
-            <th colspan="2">Action</th>
+            <th colspan="2">Stats</th>
         </tr>
         </thead>
         <tbody>
         {% for team in teams %}
             <tr>
                 <td>{{ team.name }}</td>
-                <td class="text-center">
+                <td class="text-center w-0.5">
                     <a href="{{ path('teamPlayersStats', {teamId: team.id, method: 'AVG'}) }}">Moyennes</a>
                 </td>
-                <td class="text-center">
+                <td class="text-center w-0.5">
                     <a href="{{ path('teamPlayersStats', {teamId: team.id, method: 'SUM'}) }}">Totaux</a>
                 </td>
             </tr>

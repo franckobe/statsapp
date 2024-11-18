@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\DTO\PlayerStatsDTO;
 use App\Entity\GameStats;
 use App\Entity\Player;
+use App\Entity\Team;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -32,6 +33,20 @@ class GameStatsRepository extends ServiceEntityRepository
             ->select("
             p.id as player_id,
             p.name as player_name,
+            t.id AS team_id,
+            t.name AS team_name,
+            CASE 
+                WHEN ht.id = t.id THEN at.id
+                ELSE ht.id 
+            END AS opponent_team_id,
+            CASE 
+                WHEN ht.id = t.id THEN at.name
+                ELSE ht.name 
+            END AS opponent_team_name,
+            ht.id as home_team_id,
+            ht.name as home_team_name,
+            at.id as away_team_id,
+            at.name as away_team_name,
             {$gamesCol} AS games_played,
             {$method}(gs.minutes) AS minutes,
             {$method}(gs.points) AS points,
@@ -54,7 +69,10 @@ class GameStatsRepository extends ServiceEntityRepository
             {$method}(gs.plusMinus) AS plus_minus
         ")
             ->join('gs.player', 'p')
+            ->join('p.team', 't')
             ->join('gs.game', 'g')
+            ->join('g.homeTeam', 'ht')
+            ->join('g.awayTeam', 'at')
             ->where('gs.minutes > 0')
             ->andWhere('p.team = :team_id')
             ->setParameter('team_id', $teamId);
@@ -78,6 +96,9 @@ class GameStatsRepository extends ServiceEntityRepository
 
         return array_map(fn($result) => new PlayerStatsDTO(
             player: Player::hydrate($result['player_id'], $result['player_name']),
+            team: Team::hydrate($result['team_id'], $result['team_name']),
+            opponentTeam: Team::hydrate($result['opponent_team_id'], $result['opponent_team_name']),
+            home: (int)$result['team_id'] === (int)$result['home_team_id'],
             gamesPlayed: (int) $result['games_played'],
             minutes: round($result['minutes'], 1),
             points: round($result['points'], 1),

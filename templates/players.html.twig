@@ -1,21 +1,19 @@
 {% extends "base.html.twig" %}
 
 {% block main %}
-    <table class="table">
+    <table class="table table-orderable">
         <caption>{{ players|length }} joueurs</caption>
         <thead>
         <tr>
             <th>Nom</th>
             <th>Equipe</th>
-            <th></th>
         </tr>
         </thead>
         <tbody>
         {% for player in players %}
             <tr>
-                <td>{{ player.name }}</td>
-                <td>{{ player.team.name }}</td>
-                <td><a href="{{ path('player', {playerId: player.id}) }}">Voir</a></td>
+                <td><a href="{{ path('player', {playerId: player.id}) }}">{{ player.name }}</a></td>
+                <td><a href="{{ path('teamPlayersStats', {teamId: player.team.id, method: 'AVG'}) }}">{{ player.team.name }}</a></td>
             </tr>
         {% endfor %}
         </tbody>

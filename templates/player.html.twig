@@ -3,20 +3,25 @@
 {% block main %}
 
     <div class="w-full max-w-full overflow-x-auto overflow-y-hidden">
-        <table class="table stats-table">
+        <table class="table stats-table table-orderable">
             <thead>
             <tr>
                 <th>Type</th>
+                <th>D/E</th>
                 <th>J</th>
                 <th>Min</th>
                 <th>PTS</th>
-                <th colspan="2">2PTS</th>
-                <th>2PTS%</th>
-                <th colspan="2">3PTS</th>
-                <th>3PTS%</th>
-                <th colspan="2">TOT</th>
+                <th>2PR</th>
+                <th>2PT</th>
+                <th>2P%</th>
+                <th>3PR</th>
+                <th>3PT</th>
+                <th>3P%</th>
+                <th>TOTR</th>
+                <th>TOTT</th>
                 <th>TOT%</th>
-                <th colspan="2">LF</th>
+                <th>LFR</th>
+                <th>LFT</th>
                 <th>LF%</th>
                 <th>REBO</th>
                 <th>REBD</th>
@@ -27,31 +32,76 @@
                 <th>BP</th>
                 <th>PD</th>
                 <th>Ctr</th>
-                <th>Ctr S</th>
+                <th>CtrS</th>
                 <th>Ev</th>
                 <th>+/-</th>
             </tr>
             </thead>
             <tbody>
-            {% for stats in [player.games, player.averages, player.totals] %}
+            {% for stat in player.games %}
+                <tr class="">
+                    <th>{{ stat.opponentTeam.name }}</th>
+                    <td>{{ stat.home ? 'D' : 'E' }}</td>
+                    <td>{{ stat.gamesPlayed }}</td>
+                    <td>{{ stat.minutes }}</td>
+                    <td>{{ stat.points }}</td>
+                    <td>{{ stat.fgm2 }}</td>
+                    <td>{{ stat.fga2 }}</td>
+                    <td>{{ stat.fg2Percentage }}</td>
+                    <td>{{ stat.fgm3 }}</td>
+                    <td>{{ stat.fga3 }}</td>
+                    <td>{{ stat.fg3Percentage }}</td>
+                    <td>{{ stat.fgmTot }}</td>
+                    <td>{{ stat.fgaTot }}</td>
+                    <td>{{ stat.fgTotPercentage }}</td>
+                    <td>{{ stat.ftm }}</td>
+                    <td>{{ stat.fta }}</td>
+                    <td>{{ stat.ftPercentage }}</td>
+                    <td>{{ stat.offensiveRebound }}</td>
+                    <td>{{ stat.defensiveRebound }}</td>
+                    <td>{{ stat.rebound }}</td>
+                    <td>{{ stat.foul }}</td>
+                    <td>{{ stat.foulProvoked }}</td>
+                    <td>{{ stat.steal }}</td>
+                    <td>{{ stat.turnover }}</td>
+                    <td>{{ stat.assist }}</td>
+                    <td>{{ stat.block }}</td>
+                    <td>{{ stat.blockReceived }}</td>
+                    <td>{{ stat.efficiency }}</td>
+                    <td>{{ stat.plusMinus }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+            {% for stats in [player.averages, player.totals] %}
                 {% for stat in stats %}
-                    <tr class="{{ loop.parent.loop.index > 1 ? 'bg-gray-900' : '' }}">
-                        <th>{{ loop.parent.loop.first ? '' : (loop.parent.loop.last ? 'Tot.' : 'Moy.') }}</th>
-                        <td>{{ stat.gamesPlayed }}</td>
+                    <tr class="bg-gray-900">
+                        <th>{{ loop.parent.loop.first ? 'Moy.' : 'Tot.' }}</th>
+                        {% if loop.parent.loop.first %}
+                            <td rowspan="2" colspan="2">{{ stat.gamesPlayed }}</td>
+                        {% endif %}
                         <td>{{ stat.minutes }}</td>
                         <td>{{ stat.points }}</td>
                         <td>{{ stat.fgm2 }}</td>
                         <td>{{ stat.fga2 }}</td>
-                        <td>{{ stat.fg2Percentage }}</td>
+                        {% if loop.parent.loop.first %}
+                            <td rowspan="2">{{ stat.fg2Percentage }}</td>
+                        {% endif %}
                         <td>{{ stat.fgm3 }}</td>
                         <td>{{ stat.fga3 }}</td>
-                        <td>{{ stat.fg3Percentage }}</td>
+                        {% if loop.parent.loop.first %}
+                            <td rowspan="2">{{ stat.fg3Percentage }}</td>
+                        {% endif %}
                         <td>{{ stat.fgmTot }}</td>
                         <td>{{ stat.fgaTot }}</td>
-                        <td>{{ stat.fgTotPercentage }}</td>
+                        {% if loop.parent.loop.first %}
+                            <td rowspan="2">{{ stat.fgTotPercentage }}</td>
+                        {% endif %}
                         <td>{{ stat.ftm }}</td>
                         <td>{{ stat.fta }}</td>
-                        <td>{{ stat.ftPercentage }}</td>
+                        {% if loop.parent.loop.first %}
+                            <td rowspan="2">{{ stat.ftPercentage }}</td>
+                        {% endif %}
                         <td>{{ stat.offensiveRebound }}</td>
                         <td>{{ stat.defensiveRebound }}</td>
                         <td>{{ stat.rebound }}</td>
@@ -67,7 +117,7 @@
                     </tr>
                 {% endfor %}
             {% endfor %}
-            </tbody>
+            </tfoot>
         </table>
     </div>
 
