@@ -1,12 +1,13 @@
 {% extends "base.html.twig" %}
 
 {% block main %}
-    <h1>{{ players|length }} joueurs</h1>
-    <table>
+    <table class="table">
+        <caption>{{ players|length }} joueurs</caption>
         <thead>
         <tr>
             <th>Nom</th>
             <th>Equipe</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
@@ -14,6 +15,7 @@
             <tr>
                 <td>{{ player.name }}</td>
                 <td>{{ player.team.name }}</td>
+                <td><a href="{{ path('player', {playerId: player.id}) }}">Voir</a></td>
             </tr>
         {% endfor %}
         </tbody>

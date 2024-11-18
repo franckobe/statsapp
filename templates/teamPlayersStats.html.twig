@@ -1,0 +1,78 @@
+{% extends "base.html.twig" %}
+
+{% block main %}
+    <div class="flex items-center justify-between mb-4">
+        <h1>{{ stats|length }} joueurs</h1>
+        <div class="btn-group">
+            {% set slugs = app.request.attributes.get('_route_params') %}
+            <a href="{{ path('teamPlayersStats', {teamId: slugs.teamId, method: 'AVG'}) }}" class="{{ slugs.method is same as 'AVG' ? 'active' : ''}}">Moy.</a>
+            <a href="{{ path('teamPlayersStats', {teamId: slugs.teamId, method: 'SUM'}) }}" class="{{ slugs.method is same as 'SUM' ? 'active' : ''}}">Tot.</a>
+        </div>
+    </div>
+    <div class="w-full max-w-full overflow-x-auto overflow-y-hidden">
+        <table class="table stats-table">
+            <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Nb</th>
+                <th>Min</th>
+                <th>PTS</th>
+                <th colspan="2">2PTS</th>
+                <th>2PTS%</th>
+                <th colspan="2">3PTS</th>
+                <th>3PTS%</th>
+                <th colspan="2">TOT</th>
+                <th>TOT%</th>
+                <th colspan="2">LF</th>
+                <th>LF%</th>
+                <th>REBO</th>
+                <th>REBD</th>
+                <th>TOT</th>
+                <th>FT</th>
+                <th>FP</th>
+                <th>IN</th>
+                <th>BP</th>
+                <th>PD</th>
+                <th>Ctr</th>
+                <th>Ctr S</th>
+                <th>Ev</th>
+                <th>+/-</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for stat in stats %}
+                <tr>
+                    <th><a href="{{ path('player', {playerId: stat.player.id}) }}">{{ stat.player.name }}</a></th>
+                    <td>{{ stat.gamesPlayed }}</td>
+                    <td>{{ stat.minutes }}</td>
+                    <td>{{ stat.points }}</td>
+                    <td>{{ stat.fgm2 }}</td>
+                    <td>{{ stat.fga2 }}</td>
+                    <td>{{ stat.fg2Percentage }}</td>
+                    <td>{{ stat.fgm3 }}</td>
+                    <td>{{ stat.fga3 }}</td>
+                    <td>{{ stat.fg3Percentage }}</td>
+                    <td>{{ stat.fgmTot }}</td>
+                    <td>{{ stat.fgaTot }}</td>
+                    <td>{{ stat.fgTotPercentage }}</td>
+                    <td>{{ stat.ftm }}</td>
+                    <td>{{ stat.fta }}</td>
+                    <td>{{ stat.ftPercentage }}</td>
+                    <td>{{ stat.offensiveRebound }}</td>
+                    <td>{{ stat.defensiveRebound }}</td>
+                    <td>{{ stat.rebound }}</td>
+                    <td>{{ stat.foul }}</td>
+                    <td>{{ stat.foulProvoked }}</td>
+                    <td>{{ stat.steal }}</td>
+                    <td>{{ stat.turnover }}</td>
+                    <td>{{ stat.assist }}</td>
+                    <td>{{ stat.block }}</td>
+                    <td>{{ stat.blockReceived }}</td>
+                    <td>{{ stat.efficiency }}</td>
+                    <td>{{ stat.plusMinus }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

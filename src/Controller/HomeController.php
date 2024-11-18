@@ -2,88 +2,52 @@
 
 namespace App\Controller;
 
-use App\DTO\PlayerStatsDTO;
-use App\Entity\Player;
+use App\DTO\PlayerAllStatsDTO;
 use App\Repository\GameStatsRepository;
 use App\Repository\PlayerRepository;
+use App\Repository\TeamRepository;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends AbstractController
 {
-
-    #[Route('/', name: 'playersAverages')]
-    #[Template(template: 'playersAverages.html.twig')]
-    public function index(GameStatsRepository $gameStatsRepository): array
+    #[Route('/', name: 'teams', methods: ['GET'])]
+    #[Template(template: 'teams.html.twig')]
+    public function teams(TeamRepository $teamRepository): array
     {
-
-        $results = $gameStatsRepository->createQueryBuilder('gs')
-                            ->select('
-            p.id as player_id,
-            p.name as player_name,
-            count(gs.id) AS games_played,
-            AVG(gs.minutes) AS minutes,
-            AVG(gs.points) AS points,
-            AVG(gs.fgm2) AS fgm2,
-            AVG(gs.fga2) AS fga2,
-            AVG(gs.fgm3) AS fgm3,
-            AVG(gs.fga3) AS fga3,
-            AVG(gs.ftm) AS ftm,
-            AVG(gs.fta) AS fta,
-            AVG(gs.offensiveRebound) AS offensive_rebound,
-            AVG(gs.defensiveRebound) AS defensive_rebound,
-            AVG(gs.foul) AS foul,
-            AVG(gs.foul_provoked) AS foul_provoked,
-            AVG(gs.steal) AS steal,
-            AVG(gs.turnover) AS turnover,
-            AVG(gs.assist) AS assist,
-            AVG(gs.block) AS block,
-            AVG(gs.blockReceived) AS block_received,
-            AVG(gs.efficiency) AS efficiency,
-            AVG(gs.plusMinus) AS plus_minus
-        ')
-            ->join('gs.player', 'p')
-            ->join('p.team', 't')
-            ->where('gs.minutes > 0')
-            ->where('t.name = :teamName')
-            ->setParameter('teamName', 'Istres Sports BC')
-            ->groupBy('p.id')
-            ->orderBy('points', 'DESC')
-            ->getQuery()
-            ->getResult();
-
-        $averages = array_map(fn($result) => new PlayerStatsDTO(
-            player: Player::hydrate($result['player_id'], $result['player_name']),
-            gamesPlayed: (int) $result['games_played'],
-            minutes: round($result['minutes'], 1),
-            points: round($result['points'], 1),
-            fgm2: round($result['fgm2'], 1),
-            fga2: round($result['fga2'], 1),
-            fgm3: round($result['fgm3'], 1),
-            fga3: round($result['fga3'], 1),
-            ftm: round($result['ftm'], 1),
-            fta: round($result['fta'], 1),
-            offensiveRebound: round($result['offensive_rebound'], 1),
-            defensiveRebound: round($result['defensive_rebound'], 1),
-            foul: round($result['foul'], 1),
-            foulProvoked: round($result['foul_provoked'], 1),
-            steal: round($result['steal'], 1),
-            turnover: round($result['turnover'], 1),
-            assist: round($result['assist'], 1),
-            block: round($result['block'], 1),
-            blockReceived: round($result['block_received'], 1),
-            efficiency: round($result['efficiency'], 1),
-            plusMinus: round($result['plus_minus'], 1),
-        ), $results);
-
         return [
-            'averages' => $averages,
+            'teams' => $teamRepository->findAllTeams(),
+            'breadcrumb' => [
+                [
+                    'title' => 'Equipes',
+                ]
+            ]
         ];
     }
 
-    #[Route('/match-par-match', name: 'games', methods: ['GET'])]
-    #[Template(template: 'playersAverages.html.twig')]
+    #[Route('/equipes/{teamId}/stats-individuelles/{method}', name: 'teamPlayersStats')]
+    #[Template(template: 'teamPlayersStats.html.twig')]
+    public function teamPlayersStats(int $teamId, string $method, GameStatsRepository $gameStatsRepository, TeamRepository $teamRepository): array
+    {
+        $stats = $gameStatsRepository->getCalculatedStats($teamId, $method);
+        $team = $teamRepository->find($teamId);
+        return [
+            'stats' => $stats,
+            'breadcrumb' => [
+                [
+                    'path' => $this->generateUrl('teams'),
+                    'title' => 'Equipes',
+                ],
+                [
+                    'title' => $team->getName(),
+                ]
+            ]
+        ];
+    }
+
+    #[Route('/matchs', name: 'games', methods: ['GET'])]
+    #[Template(template: 'games.html.twig')]
     public function games(): array
     {
         return [
@@ -96,13 +60,37 @@ class HomeController extends AbstractController
     public function players(PlayerRepository $playerRepository): array
     {
         return [
-            'players' => $playerRepository
-                            ->createQueryBuilder('p')
-                            ->join('p.team', 't')
-                            ->where('t.name = :teamName')
-                            ->setParameter('teamName', 'Istres Sports BC')
-                            ->orderBy('p.name', 'ASC')
-                            ->getQuery()->getResult(),
+            'players' => $playerRepository->findAllPlayers(),
+            'breadcrumb' => [
+                [
+                    'title' => 'Joueurs',
+                ],
+            ]
+        ];
+    }
+
+    #[Route('/joueurs/{playerId}', name: 'player', methods: ['GET'])]
+    #[Template(template: 'player.html.twig')]
+    public function player(int $playerId, PlayerRepository $playerRepository, GameStatsRepository $gameStatsRepository): array
+    {
+        $player = $playerRepository->find($playerId);
+        $playerAverages = $gameStatsRepository->getCalculatedStats($player->getTeam()->getId(), 'AVG', $player->getId());
+        $playerTotals = $gameStatsRepository->getCalculatedStats($player->getTeam()->getId(), 'SUM', $player->getId());
+        $playerGames = $gameStatsRepository->getCalculatedStats($player->getTeam()->getId(), '', $player->getId());
+
+        $playerAllStatsDTO = new PlayerAllStatsDTO($player, $playerAverages, $playerTotals, $playerGames);
+
+        return [
+            'player' => $playerAllStatsDTO,
+            'breadcrumb' => [
+                [
+                    'path' => $this->generateUrl('players'),
+                    'title' => 'Joueurs',
+                ],
+                [
+                    'title' => $player->getName(),
+                ],
+            ]
         ];
     }
 

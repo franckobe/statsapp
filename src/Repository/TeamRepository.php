@@ -17,6 +17,11 @@ class TeamRepository extends ServiceEntityRepository
         parent::__construct($registry, Team::class);
     }
 
+    public function findAllTeams(): array
+    {
+        return $this->findBy([], ['name' => 'ASC']);
+    }
+
     public function findOneOrInsert(string $teamName): Team
     {
         $team = $this->findOneBy(['name' => $teamName]);

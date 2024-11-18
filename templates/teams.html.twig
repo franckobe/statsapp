@@ -1,0 +1,26 @@
+{% extends "base.html.twig" %}
+
+{% block main %}
+    <table class="table">
+        <caption>{{ teams|length }} équipes</caption>
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th colspan="2">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for team in teams %}
+            <tr>
+                <td>{{ team.name }}</td>
+                <td class="text-center">
+                    <a href="{{ path('teamPlayersStats', {teamId: team.id, method: 'AVG'}) }}">Moyennes</a>
+                </td>
+                <td class="text-center">
+                    <a href="{{ path('teamPlayersStats', {teamId: team.id, method: 'SUM'}) }}">Totaux</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

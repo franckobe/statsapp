@@ -17,23 +17,36 @@
             <div>
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" />
             </div>
+            {% set currentRoute = app.request.get('_route') %}
             <nav>
                 <ul>
                     <li>
-                        <a href="{{ path('playersAverages') }}" class="{{ app.request.get('_route') is same as 'playersAverages' ? 'bg-purple-900' : '' }}">Moyennes</a>
+                        <a href="{{ path('teams') }}" class="{{ currentRoute in ['teams', 'teamPlayersStats'] ? 'active' : '' }}">Equipes</a>
                     </li>
                     <li>
-                        <a href="{{ path('games') }}" class="{{ app.request.get('_route') is same as 'games' ? 'bg-purple-900' : '' }}">Match par match</a>
+                        <a href="{{ path('games') }}" class="{{ currentRoute is same as 'games' ? 'active' : '' }}">Match par match</a>
                     </li>
                     <li>
-                        <a href="{{ path('players') }}" class="{{ app.request.get('_route') is same as 'players' ? 'bg-purple-900' : '' }}">Joueurs</a>
+                        <a href="{{ path('players') }}" class="{{ currentRoute in ['players', 'player'] ? 'active' : '' }}">Joueurs</a>
                     </li>
+                    <li class="flex-grow"></li>
                     <li>
-                        <a href="{{ path('addGame') }}" class="{{ app.request.get('_route') is same as 'addGame' ? 'bg-purple-900' : '' }}">Ajouter</a>
+                        <a href="{{ path('addGame') }}" class="{{ currentRoute is same as 'addGame' ? 'active' : '' }}">+</a>
                     </li>
                 </ul>
             </nav>
         </header>
+        {% if breadcrumb is defined %}
+            <div class="breadcrumb">
+                {% for item in breadcrumb %}
+                    {% if item.path is defined %}
+                        <div><a href="{{ item.path }}">{{ item.title }}</a></div>
+                    {% else %}
+                        <div>{{ item.title }}</div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
         <main>
             {% block main %}{% endblock %}
         </main>
