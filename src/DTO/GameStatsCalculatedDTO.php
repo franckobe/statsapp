@@ -5,7 +5,7 @@ namespace App\DTO;
 use App\Entity\Player;
 use App\Entity\Team;
 
-class PlayerStatsDTO
+class GameStatsCalculatedDTO
 {
     public float $fg2Percentage;
     public float $fg3Percentage;
@@ -17,8 +17,6 @@ class PlayerStatsDTO
     public function __construct(
         public Player $player,
         public Team $team,
-        public Team $opponentTeam,
-        public bool $home,
         public int $gamesPlayed,
         public float $minutes,
         public float $points,

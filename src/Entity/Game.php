@@ -22,8 +22,14 @@ class Game
     #[ORM\JoinColumn(nullable: false)]
     private ?Team $homeTeam = null;
 
+    #[ORM\Column]
+    private ?int $homeScore = null;
+
     #[ORM\ManyToOne(inversedBy: 'games')]
     private ?Team $awayTeam = null;
+
+    #[ORM\Column]
+    private ?int $awayScore = null;
 
     /**
      * @var Collection<int, GameStats>
@@ -75,6 +81,26 @@ class Game
         $this->awayTeam = $awayTeam;
 
         return $this;
+    }
+
+    public function getHomeScore(): ?int
+    {
+        return $this->homeScore;
+    }
+
+    public function setHomeScore(?int $homeScore): void
+    {
+        $this->homeScore = $homeScore;
+    }
+
+    public function getAwayScore(): ?int
+    {
+        return $this->awayScore;
+    }
+
+    public function setAwayScore(?int $awayScore): void
+    {
+        $this->awayScore = $awayScore;
     }
 
     /**

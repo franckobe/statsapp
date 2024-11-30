@@ -1,12 +1,12 @@
 {% extends "base.html.twig" %}
 
 {% block main %}
-    <table class="table">
+    <table class="table table-filterable">
         <caption>{{ teams|length }} équipes</caption>
         <thead>
         <tr>
-            <th>Nom</th>
-            <th colspan="2">Stats</th>
+            <th class="filterable">Nom</th>
+            <th colspan="3">Stats</th>
         </tr>
         </thead>
         <tbody>
@@ -14,10 +14,13 @@
             <tr>
                 <td>{{ team.name }}</td>
                 <td class="text-center w-0.5">
-                    <a href="{{ path('teamPlayersStats', {teamId: team.id, method: 'AVG'}) }}">Moyennes</a>
+                    <a href="{{ path('teamPlayersStats', {teamId: team.id, method: 'AVG'}) }}" class="whitespace-nowrap">Moyennes</a>
                 </td>
                 <td class="text-center w-0.5">
-                    <a href="{{ path('teamPlayersStats', {teamId: team.id, method: 'SUM'}) }}">Totaux</a>
+                    <a href="{{ path('teamPlayersStats', {teamId: team.id, method: 'SUM'}) }}" class="whitespace-nowrap">Totaux</a>
+                </td>
+                <td class="text-center w-0.5">
+                    <a href="{{ path('teamPlayersStats', {teamId: team.id, method: 'MINUTE'}) }}" class="whitespace-nowrap">/ 40min</a>
                 </td>
             </tr>
         {% endfor %}

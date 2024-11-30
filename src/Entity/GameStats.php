@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\GameStatsRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GameStatsRepository::class)]
@@ -55,7 +56,7 @@ class GameStats
     private ?int $foul = null;
 
     #[ORM\Column]
-    private ?int $foul_provoked = null;
+    private ?int $foulProvoked = null;
 
     #[ORM\Column]
     private ?int $steal = null;
@@ -241,12 +242,12 @@ class GameStats
 
     public function getFoulProvoked(): ?int
     {
-        return $this->foul_provoked;
+        return $this->foulProvoked;
     }
 
-    public function setFoulProvoked(int $foul_provoked): static
+    public function setFoulProvoked(int $foulProvoked): static
     {
-        $this->foul_provoked = $foul_provoked;
+        $this->foulProvoked = $foulProvoked;
 
         return $this;
     }

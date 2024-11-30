@@ -18,7 +18,7 @@ class GameRepository extends ServiceEntityRepository
         parent::__construct($registry, Game::class);
     }
 
-    public function findOneOrInsert(int $gameNumber, Team $homeTeam, Team $awayTeam): Game
+    public function findOneOrInsert(int $gameNumber, Team $homeTeam, Team $awayTeam, int $homeScore, int $awayScore): Game
     {
         $game = $this->findOneBy(['number' => $gameNumber]);
         if (!$game) {
@@ -26,6 +26,8 @@ class GameRepository extends ServiceEntityRepository
             $game->setNumber($gameNumber);
             $game->setHomeTeam($homeTeam);
             $game->setAwayTeam($awayTeam);
+            $game->setHomeScore($homeScore);
+            $game->setAwayScore($awayScore);
             $this->getEntityManager()->persist($game);
             $this->getEntityManager()->flush();
             try {

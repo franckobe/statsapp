@@ -30,7 +30,7 @@ class FileController extends AbstractController
 
             $homeTeam = $teamRepository->findOneOrInsert($gameFileTool->getHomeTeam());
             $awayTeam = $teamRepository->findOneOrInsert($gameFileTool->getAwayTeam());
-            $game = $gameRepository->findOneOrInsert($gameFileTool->getGameNumber(), $homeTeam, $awayTeam);
+            $game = $gameRepository->findOneOrInsert($gameFileTool->getGameNumber(), $homeTeam, $awayTeam, $gameFileTool->getHomeScore(), $gameFileTool->getAwayScore());
             $teamByName = [
                 $homeTeam->getName() => $homeTeam,
                 $awayTeam->getName() => $awayTeam

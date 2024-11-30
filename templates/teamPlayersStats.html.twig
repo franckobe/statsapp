@@ -7,10 +7,11 @@
             {% set slugs = app.request.attributes.get('_route_params') %}
             <a href="{{ path('teamPlayersStats', {teamId: slugs.teamId, method: 'AVG'}) }}" class="{{ slugs.method is same as 'AVG' ? 'active' : ''}}">Moy.</a>
             <a href="{{ path('teamPlayersStats', {teamId: slugs.teamId, method: 'SUM'}) }}" class="{{ slugs.method is same as 'SUM' ? 'active' : ''}}">Tot.</a>
+            <a href="{{ path('teamPlayersStats', {teamId: slugs.teamId, method: 'MINUTE'}) }}" class="{{ slugs.method is same as 'MINUTE' ? 'active' : ''}}">/ 40min</a>
         </div>
     </div>
     <div class="w-full max-w-full overflow-x-auto overflow-y-hidden">
-        <table class="table stats-table table-orderable" id="team-players-stats-table">
+        <table class="table table-striped stats-table table-orderable" id="team-players-stats-table">
             <thead>
             <tr>
                 <th>Nom</th>

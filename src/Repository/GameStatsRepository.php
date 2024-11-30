@@ -2,7 +2,8 @@
 
 namespace App\Repository;
 
-use App\DTO\PlayerStatsDTO;
+use App\DTO\GameStatsCalculatedDTO;
+use App\Entity\Game;
 use App\Entity\GameStats;
 use App\Entity\Player;
 use App\Entity\Team;
@@ -18,107 +19,92 @@ class GameStatsRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, GameStats::class);
     }
+
     public function getCalculatedStats(int $teamId, string $method, ?int $playerId = null): array
     {
-        if (!in_array($method, ['', 'AVG', 'SUM'])) {
+        if (!in_array($method, ['AVG', 'SUM','MINUTE'])) {
             return [];
         }
 
-        $gamesCol = 'count(gs.id)';
-        if ($method === '') {
-            $gamesCol = 'g.number';
+        $coeff = '';
+        if ($method === 'MINUTE') {
+            $method = 'AVG';
+            $coeff = '/(CASE WHEN gs.minutes = 0 THEN 1 ELSE gs.minutes END)*40';
         }
 
         $q = $this->createQueryBuilder('gs')
             ->select("
             p.id as player_id,
-            p.name as player_name,
-            t.id AS team_id,
-            t.name AS team_name,
-            CASE 
-                WHEN ht.id = t.id THEN at.id
-                ELSE ht.id 
-            END AS opponent_team_id,
-            CASE 
-                WHEN ht.id = t.id THEN at.name
-                ELSE ht.name 
-            END AS opponent_team_name,
-            ht.id as home_team_id,
-            ht.name as home_team_name,
-            at.id as away_team_id,
-            at.name as away_team_name,
-            {$gamesCol} AS games_played,
-            {$method}(gs.minutes) AS minutes,
-            {$method}(gs.points) AS points,
-            {$method}(gs.fgm2) AS fgm2,
-            {$method}(gs.fga2) AS fga2,
-            {$method}(gs.fgm3) AS fgm3,
-            {$method}(gs.fga3) AS fga3,
-            {$method}(gs.ftm) AS ftm,
-            {$method}(gs.fta) AS fta,
-            {$method}(gs.offensiveRebound) AS offensive_rebound,
-            {$method}(gs.defensiveRebound) AS defensive_rebound,
-            {$method}(gs.foul) AS foul,
-            {$method}(gs.foul_provoked) AS foul_provoked,
-            {$method}(gs.steal) AS steal,
-            {$method}(gs.turnover) AS turnover,
-            {$method}(gs.assist) AS assist,
-            {$method}(gs.block) AS block,
-            {$method}(gs.blockReceived) AS block_received,
-            {$method}(gs.efficiency) AS efficiency,
-            {$method}(gs.plusMinus) AS plus_minus
+            g.id as game_id,
+            count(gs.id) AS games_played,
+            {$method}(gs.minutes{$coeff}) AS minutes,
+            {$method}(gs.points{$coeff}) AS points,
+            {$method}(gs.fgm2{$coeff}) AS fgm2,
+            {$method}(gs.fga2{$coeff}) AS fga2,
+            {$method}(gs.fgm3{$coeff}) AS fgm3,
+            {$method}(gs.fga3{$coeff}) AS fga3,
+            {$method}(gs.ftm{$coeff}) AS ftm,
+            {$method}(gs.fta{$coeff}) AS fta,
+            {$method}(gs.offensiveRebound{$coeff}) AS offensive_rebound,
+            {$method}(gs.defensiveRebound{$coeff}) AS defensive_rebound,
+            {$method}(gs.foul{$coeff}) AS foul,
+            {$method}(gs.foulProvoked{$coeff}) AS foul_provoked,
+            {$method}(gs.steal{$coeff}) AS steal,
+            {$method}(gs.turnover{$coeff}) AS turnover,
+            {$method}(gs.assist{$coeff}) AS assist,
+            {$method}(gs.block{$coeff}) AS block,
+            {$method}(gs.blockReceived{$coeff}) AS block_received,
+            {$method}(gs.efficiency{$coeff}) AS efficiency,
+            {$method}(gs.plusMinus{$coeff}) AS plus_minus
         ")
             ->join('gs.player', 'p')
-            ->join('p.team', 't')
             ->join('gs.game', 'g')
-            ->join('g.homeTeam', 'ht')
-            ->join('g.awayTeam', 'at')
+            ->join('p.team', 't')
             ->where('gs.minutes > 0')
             ->andWhere('p.team = :team_id')
             ->setParameter('team_id', $teamId);
 
         if ($playerId) {
             $q = $q->andWhere('p.id = :player_id')->setParameter('player_id', $playerId);
-            if ($method !== '') {
-                $q = $q->groupBy('p.id');
-                $q = $q->orderBy('points', 'DESC');
-            }
-            else {
-                $q = $q->orderBy('g.number', 'ASC');
-            }
+            $q = $q->groupBy('p.id');
+            $q = $q->orderBy('points', 'DESC');
         }
         else {
-            $q = $q->groupBy('p.id')->orderBy('points', 'DESC');
+            $q = $q->groupBy('p');
+            $q = $q->orderBy('points', 'DESC');
         }
 
 
         $results = $q->getQuery()->getResult();
 
-        return array_map(fn($result) => new PlayerStatsDTO(
-            player: Player::hydrate($result['player_id'], $result['player_name']),
-            team: Team::hydrate($result['team_id'], $result['team_name']),
-            opponentTeam: Team::hydrate($result['opponent_team_id'], $result['opponent_team_name']),
-            home: (int)$result['team_id'] === (int)$result['home_team_id'],
-            gamesPlayed: (int) $result['games_played'],
-            minutes: round($result['minutes'], 1),
-            points: round($result['points'], 1),
-            fgm2: round($result['fgm2'], 1),
-            fga2: round($result['fga2'], 1),
-            fgm3: round($result['fgm3'], 1),
-            fga3: round($result['fga3'], 1),
-            ftm: round($result['ftm'], 1),
-            fta: round($result['fta'], 1),
-            offensiveRebound: round($result['offensive_rebound'], 1),
-            defensiveRebound: round($result['defensive_rebound'], 1),
-            foul: round($result['foul'], 1),
-            foulProvoked: round($result['foul_provoked'], 1),
-            steal: round($result['steal'], 1),
-            turnover: round($result['turnover'], 1),
-            assist: round($result['assist'], 1),
-            block: round($result['block'], 1),
-            blockReceived: round($result['block_received'], 1),
-            efficiency: round($result['efficiency'], 1),
-            plusMinus: round($result['plus_minus'], 1),
-        ), $results);
+        return array_map(function($result) {
+
+            $player = $this->getEntityManager()->getRepository(Player::class)->find($result['player_id']);
+
+            return new GameStatsCalculatedDTO(
+                player: $player,
+                team: $player->getTeam(),
+                gamesPlayed: (int) $result['games_played'],
+                minutes: round($result['minutes'], 1),
+                points: round($result['points'], 1),
+                fgm2: round($result['fgm2'], 1),
+                fga2: round($result['fga2'], 1),
+                fgm3: round($result['fgm3'], 1),
+                fga3: round($result['fga3'], 1),
+                ftm: round($result['ftm'], 1),
+                fta: round($result['fta'], 1),
+                offensiveRebound: round($result['offensive_rebound'], 1),
+                defensiveRebound: round($result['defensive_rebound'], 1),
+                foul: round($result['foul'], 1),
+                foulProvoked: round($result['foul_provoked'], 1),
+                steal: round($result['steal'], 1),
+                turnover: round($result['turnover'], 1),
+                assist: round($result['assist'], 1),
+                block: round($result['block'], 1),
+                blockReceived: round($result['block_received'], 1),
+                efficiency: round($result['efficiency'], 1),
+                plusMinus: round($result['plus_minus'], 1),
+            );
+        }, $results);
     }
 }

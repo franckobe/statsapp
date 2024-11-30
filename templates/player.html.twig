@@ -1,13 +1,13 @@
 {% extends "base.html.twig" %}
 
 {% block main %}
-
     <div class="w-full max-w-full overflow-x-auto overflow-y-hidden">
-        <table class="table stats-table table-orderable">
+        <table class="table table-striped stats-table table-orderable">
             <thead>
             <tr>
-                <th>Type</th>
-                <th>D/E</th>
+                <th>Adversaire</th>
+                <th>🏆</th>
+                <th>📍</th>
                 <th>J</th>
                 <th>Min</th>
                 <th>PTS</th>
@@ -26,13 +26,13 @@
                 <th>REBO</th>
                 <th>REBD</th>
                 <th>TOT</th>
-                <th>FT</th>
-                <th>FP</th>
+                <th>F</th>
+                <th>FPr</th>
                 <th>IN</th>
                 <th>BP</th>
                 <th>PD</th>
                 <th>Ctr</th>
-                <th>CtrS</th>
+                <th>CtrSu</th>
                 <th>Ev</th>
                 <th>+/-</th>
             </tr>
@@ -41,8 +41,9 @@
             {% for stat in player.games %}
                 <tr>
                     <th><a href="{{ path('teamPlayersStats', {teamId: stat.opponentTeam.id, method: 'AVG'}) }}">{{ stat.opponentTeam.name }}</a></th>
-                    <td>{{ stat.home ? 'D' : 'E' }}</td>
-                    <td>{{ stat.gamesPlayed }}</td>
+                    <td>{{ stat.win ? '✅' : '❌' }}</td>
+                    <td>{{ stat.home ? '🏠' : '✈️' }}</td>
+                    <td>{{ stat.game.number }}</td>
                     <td>{{ stat.minutes }}</td>
                     <td>{{ stat.points }}</td>
                     <td>{{ stat.fgm2 }}</td>
@@ -73,49 +74,48 @@
             {% endfor %}
             </tbody>
             <tfoot>
-            {% for stats in [player.averages, player.totals] %}
-                {% for stat in stats %}
-                    <tr class="bg-gray-900">
-                        <th>{{ loop.parent.loop.first ? 'Moy.' : 'Tot.' }}</th>
-                        {% if loop.parent.loop.first %}
-                            <td rowspan="2" colspan="2">{{ stat.gamesPlayed }}</td>
-                        {% endif %}
-                        <td>{{ stat.minutes }}</td>
-                        <td>{{ stat.points }}</td>
-                        <td>{{ stat.fgm2 }}</td>
-                        <td>{{ stat.fga2 }}</td>
-                        {% if loop.parent.loop.first %}
-                            <td rowspan="2">{{ stat.fg2Percentage }}</td>
-                        {% endif %}
-                        <td>{{ stat.fgm3 }}</td>
-                        <td>{{ stat.fga3 }}</td>
-                        {% if loop.parent.loop.first %}
-                            <td rowspan="2">{{ stat.fg3Percentage }}</td>
-                        {% endif %}
-                        <td>{{ stat.fgmTot }}</td>
-                        <td>{{ stat.fgaTot }}</td>
-                        {% if loop.parent.loop.first %}
-                            <td rowspan="2">{{ stat.fgTotPercentage }}</td>
-                        {% endif %}
-                        <td>{{ stat.ftm }}</td>
-                        <td>{{ stat.fta }}</td>
-                        {% if loop.parent.loop.first %}
-                            <td rowspan="2">{{ stat.ftPercentage }}</td>
-                        {% endif %}
-                        <td>{{ stat.offensiveRebound }}</td>
-                        <td>{{ stat.defensiveRebound }}</td>
-                        <td>{{ stat.rebound }}</td>
-                        <td>{{ stat.foul }}</td>
-                        <td>{{ stat.foulProvoked }}</td>
-                        <td>{{ stat.steal }}</td>
-                        <td>{{ stat.turnover }}</td>
-                        <td>{{ stat.assist }}</td>
-                        <td>{{ stat.block }}</td>
-                        <td>{{ stat.blockReceived }}</td>
-                        <td>{{ stat.efficiency }}</td>
-                        <td>{{ stat.plusMinus }}</td>
-                    </tr>
-                {% endfor %}
+
+            {% for stats in [player.totals, player.averages, player.averagesPer40min] %}
+                <tr class="bg-gray-900">
+                    <th>{{ ['Tot.', 'Moy.', 'Moy. / 40min'][loop.index0] }}</th>
+                    {% if loop.first %}
+                        <td rowspan="3" colspan="3">{{ stats.gamesPlayed }}</td>
+                    {% endif %}
+                    <td>{{ stats.minutes }}</td>
+                    <td>{{ stats.points }}</td>
+                    <td>{{ stats.fgm2 }}</td>
+                    <td>{{ stats.fga2 }}</td>
+                    {% if loop.first %}
+                        <td rowspan="3">{{ stats.fg2Percentage }}</td>
+                    {% endif %}
+                    <td>{{ stats.fgm3 }}</td>
+                    <td>{{ stats.fga3 }}</td>
+                    {% if loop.first %}
+                        <td rowspan="3">{{ stats.fg3Percentage }}</td>
+                    {% endif %}
+                    <td>{{ stats.fgmTot }}</td>
+                    <td>{{ stats.fgaTot }}</td>
+                    {% if loop.first %}
+                        <td rowspan="3">{{ stats.fgTotPercentage }}</td>
+                    {% endif %}
+                    <td>{{ stats.ftm }}</td>
+                    <td>{{ stats.fta }}</td>
+                    {% if loop.first %}
+                        <td rowspan="3">{{ stats.ftPercentage }}</td>
+                    {% endif %}
+                    <td>{{ stats.offensiveRebound }}</td>
+                    <td>{{ stats.defensiveRebound }}</td>
+                    <td>{{ stats.rebound }}</td>
+                    <td>{{ stats.foul }}</td>
+                    <td>{{ stats.foulProvoked }}</td>
+                    <td>{{ stats.steal }}</td>
+                    <td>{{ stats.turnover }}</td>
+                    <td>{{ stats.assist }}</td>
+                    <td>{{ stats.block }}</td>
+                    <td>{{ stats.blockReceived }}</td>
+                    <td>{{ stats.efficiency }}</td>
+                    <td>{{ stats.plusMinus }}</td>
+                </tr>
             {% endfor %}
             </tfoot>
         </table>

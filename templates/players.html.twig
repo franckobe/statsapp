@@ -1,12 +1,12 @@
 {% extends "base.html.twig" %}
 
 {% block main %}
-    <table class="table table-orderable">
+    <table class="table table-orderable table-filterable">
         <caption>{{ players|length }} joueurs</caption>
         <thead>
         <tr>
-            <th>Nom</th>
-            <th>Equipe</th>
+            <th class="filterable">Nom</th>
+            <th class="filterable">Equipe</th>
         </tr>
         </thead>
         <tbody>

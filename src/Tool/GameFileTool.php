@@ -11,7 +11,9 @@ class GameFileTool
 {
     private string $fileContent;
     private string $homeTeam;
+    private int $homeScore;
     private string $awayTeam;
+    private int $awayScore;
     private int $gameNumber;
     /**
      * @var GameStatsObject[] $playersGameStats
@@ -30,7 +32,7 @@ class GameFileTool
 
     private function process(): void
     {
-        $this->fileContent = str_replace(array('Istres Sport BC', 'Istres Sports Basket Club'), 'Istres Sports BC', $this->fileContent);
+        $this->fileContent = str_replace(array('Istres Sport BC', 'Istres Sports Basket Club', 'Istres Sport Basket Club'), 'Istres Sports BC', $this->fileContent);
         $this->fileContent = str_replace(array('Elias Agba Adouma', 'Ahmed Ibrahim'), array('Elias Agba Yadouma', 'Ibrahim Ahmed'), $this->fileContent);
 
         $lines = explode("\n", $this->fileContent);
@@ -47,8 +49,8 @@ class GameFileTool
             $regexGameNumber = '/^MatchNo.:\s*(\d+)/';
             if (preg_match($regexTeams, $line, $matches)) {
                 $this->homeTeam = trim($matches[1]);
-                // $homeScore = intval(trim($matches[2]));
-                // $awayScore = intval(trim($matches[3]));
+                $this->homeScore = intval(trim($matches[2]));
+                $this->awayScore = intval(trim($matches[3]));
                 $this->awayTeam = trim($matches[4]);
             }
             elseif (preg_match($regexGameNumber, $line, $matches)) {
@@ -180,6 +182,16 @@ class GameFileTool
     public function getPlayersGameStats(): array
     {
         return $this->playersGameStats;
+    }
+
+    public function getAwayScore(): int
+    {
+        return $this->awayScore;
+    }
+
+    public function getHomeScore(): int
+    {
+        return $this->homeScore;
     }
 
     public function getReferees(): array
