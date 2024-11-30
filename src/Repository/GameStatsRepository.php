@@ -3,10 +3,8 @@
 namespace App\Repository;
 
 use App\DTO\GameStatsCalculatedDTO;
-use App\Entity\Game;
 use App\Entity\GameStats;
 use App\Entity\Player;
-use App\Entity\Team;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Collection\GameStatsCollection;
 use App\DTO\GameStatsCollectionDTO;
 use App\DTO\PlayerAllStatsDTO;
-use App\Repository\GameStatsRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
 use Doctrine\Common\Collections\Criteria;

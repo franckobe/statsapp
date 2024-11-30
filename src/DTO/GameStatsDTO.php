@@ -6,7 +6,6 @@ use App\Entity\Game;
 use App\Entity\GameStats;
 use App\Entity\Player;
 use App\Entity\Team;
-use Doctrine\Common\Collections\Collection;
 
 class GameStatsDTO
 {
