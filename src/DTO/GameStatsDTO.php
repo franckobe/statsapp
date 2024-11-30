@@ -82,12 +82,4 @@ class GameStatsDTO
 
         $this->rebound = $this->defensiveRebound + $this->offensiveRebound;
     }
-
-    public static function getGameStatsFromCollection(Collection $gameStatss, string $method): GameStats
-    {
-        new self();
-        foreach ($gameStatss as $gameStats) {
-
-        }
-    }
 }
