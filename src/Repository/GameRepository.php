@@ -18,6 +18,11 @@ class GameRepository extends ServiceEntityRepository
         parent::__construct($registry, Game::class);
     }
 
+    public function findAllGames(): array
+    {
+        return $this->findBy([], ['number' => 'ASC']);
+    }
+
     public function findOneOrInsert(int $gameNumber, Team $homeTeam, Team $awayTeam, int $homeScore, int $awayScore): Game
     {
         $game = $this->findOneBy(['number' => $gameNumber]);
@@ -39,28 +44,4 @@ class GameRepository extends ServiceEntityRepository
         return $game;
     }
 
-    //    /**
-    //     * @return Game[] Returns an array of Game objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('g.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Game
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

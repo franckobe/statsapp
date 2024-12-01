@@ -13,15 +13,11 @@
         {% for team in teams %}
             <tr>
                 <td>{{ team.name }}</td>
-                <td class="text-center w-0.5">
-                    <a href="{{ path('teamPlayersStats', {teamId: team.id, method: 'AVG'}) }}" class="whitespace-nowrap">Moyennes</a>
-                </td>
-                <td class="text-center w-0.5">
-                    <a href="{{ path('teamPlayersStats', {teamId: team.id, method: 'SUM'}) }}" class="whitespace-nowrap">Totaux</a>
-                </td>
-                <td class="text-center w-0.5">
-                    <a href="{{ path('teamPlayersStats', {teamId: team.id, method: 'MINUTE'}) }}" class="whitespace-nowrap">/ 40min</a>
-                </td>
+                {% for method in calculationMethods %}
+                    <td class="text-center w-0.5">
+                        <a href="{{ path('teamPlayersStats', {teamId: team.id, method: method.name}) }}" class="whitespace-nowrap">{{ method.value }}</a>
+                    </td>
+                {% endfor %}
             </tr>
         {% endfor %}
         </tbody>

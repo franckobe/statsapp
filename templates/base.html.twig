@@ -24,7 +24,7 @@
                         <a href="{{ path('teams') }}" class="{{ currentRoute in ['teams', 'teamPlayersStats'] ? 'active' : '' }}">Equipes</a>
                     </li>
                     <li>
-                        <a href="{{ path('games') }}" class="{{ currentRoute is same as 'games' ? 'active' : '' }}">Match par match</a>
+                        <a href="{{ path('games') }}" class="{{ currentRoute in ['games', 'game'] ? 'active' : '' }}">Matchs</a>
                     </li>
                     <li>
                         <a href="{{ path('players') }}" class="{{ currentRoute in ['players', 'player'] ? 'active' : '' }}">Joueurs</a>

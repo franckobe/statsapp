@@ -5,6 +5,7 @@ namespace App\Collection;
 use App\DTO\GameStatsCalculatedDTO;
 use App\Entity\GameStats;
 use App\Entity\Player;
+use App\Enum\CalculationMethod;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -32,7 +33,14 @@ class GameStatsCollection
         }
     }
 
-    public function getAllGamesStatsCalculated(Player $player, string $method): GameStatsCalculatedDTO
+    public function getOnlyPlayedGames(): ArrayCollection
+    {
+        return $this->allGamesStats->filter(function (GameStats $gameStats) {
+            return $gameStats->getMinutes() > 0;
+        });
+    }
+
+    public function getAllGamesStatsCalculated(Player $player, CalculationMethod $method): GameStatsCalculatedDTO
     {
         $attributes = [
             'minutes', 'points', 'fgm2', 'fga2', 'fgm3', 'fga3', 'ftm', 'fta',
@@ -44,18 +52,17 @@ class GameStatsCollection
         $calculatedStats = [];
 
         foreach ($attributes as $attribute) {
-            $values = $this->allGamesStats->map(fn($gs) => $gs->{'get' . ucfirst($attribute)}())->toArray();
+            $values = $this->getOnlyPlayedGames()->map(fn($gs) => $gs->{'get' . ucfirst($attribute)}())->toArray();
 
-            if ($method === 'SUM') {
+            if ($method === CalculationMethod::SUM) {
                 $calculatedStats[$attribute] = round(array_sum($values), 1);
             }
-            elseif ($method === 'AVG') {
+            elseif ($method === CalculationMethod::AVG) {
                 $calculatedStats[$attribute] = count($values) > 0 ? round(array_sum($values) / count($values), 1) : 0;
             }
-            elseif ($method === 'MINUTE') {
-                $values = $this->allGamesStats->map(function($gs) use ($attribute) {
-                    $minutes = $gs->getMinutes();
-                    return $minutes === 0 ? 0 : $gs->{'get' . ucfirst($attribute)}() / $minutes * 40;
+            elseif ($method === CalculationMethod::MINUTE) {
+                $values = $this->getOnlyPlayedGames()->map(function($gs) use ($attribute) {
+                    return $gs->{'get' . ucfirst($attribute)}() / $gs->getMinutes() * 40;
                 })->toArray();
                 $calculatedStats[$attribute] = count($values) > 0 ? round(array_sum($values) / count($values), 1) : 0;
             }
@@ -64,7 +71,7 @@ class GameStatsCollection
         return new GameStatsCalculatedDTO(
             $player,
             $player->getTeam(),
-            count($player->getGameStats()),
+            count($this->getOnlyPlayedGames()),
             $calculatedStats['minutes'],
             $calculatedStats['points'],
             $calculatedStats['fgm2'],

@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Collection\GameStatsCollection;
 use App\DTO\GameStatsCollectionDTO;
 use App\DTO\PlayerAllStatsDTO;
+use App\Enum\CalculationMethod;
+use App\Repository\GameRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
 use Doctrine\Common\Collections\Criteria;
@@ -21,6 +23,7 @@ class HomeController extends AbstractController
     {
         return [
             'teams' => $teamRepository->findAllTeams(),
+            'calculationMethods' => CalculationMethod::cases(),
             'breadcrumb' => [
                 [
                     'title' => 'Equipes',
@@ -31,7 +34,7 @@ class HomeController extends AbstractController
 
     #[Route('/equipes/{teamId}/stats-individuelles/{method}', name: 'teamPlayersStats')]
     #[Template(template: 'teamPlayersStats.html.twig')]
-    public function teamPlayersStats(int $teamId, string $method, TeamRepository $teamRepository): array
+    public function teamPlayersStats(int $teamId, CalculationMethod $method, TeamRepository $teamRepository): array
     {
         $team = $teamRepository->find($teamId);
 
@@ -48,6 +51,7 @@ class HomeController extends AbstractController
 
         return [
             'stats' => $playerStats,
+            'calculationMethods' => CalculationMethod::cases(),
             'breadcrumb' => [
                 [
                     'path' => $this->generateUrl('teams'),
@@ -62,10 +66,38 @@ class HomeController extends AbstractController
 
     #[Route('/matchs', name: 'games', methods: ['GET'])]
     #[Template(template: 'games.html.twig')]
-    public function games(): array
+    public function games(GameRepository $gameRepository): array
     {
+        $games = $gameRepository->findAllGames();
+
         return [
+            'games' => $games,
             'message' => 'Match par match',
+        ];
+    }
+
+    #[Route('/matchs/{gameId}', name: 'game', methods: ['GET'])]
+    #[Template(template: 'game.html.twig')]
+    public function game(int $gameId, GameRepository $gameRepository): array
+    {
+        $game = $gameRepository->find($gameId);
+
+        $criteria = Criteria::create()->orderBy(["points" => Order::Descending]);
+        $sortedResults = $game->getGameStats()->matching($criteria);
+        $boxScore = GameStatsCollectionDTO::fromCollection($sortedResults);
+
+        return [
+            'game' => $game,
+            'boxscore' => $boxScore,
+            'breadcrumb' => [
+                [
+                    'path' => $this->generateUrl('games'),
+                    'title' => 'Matchs',
+                ],
+                [
+                    'title' => 'Journée ' . $game->getNumber(),
+                ],
+            ]
         ];
     }
 
@@ -75,6 +107,7 @@ class HomeController extends AbstractController
     {
         return [
             'players' => $playerRepository->findAllPlayers(),
+            'calculationMethods' => CalculationMethod::cases(),
             'breadcrumb' => [
                 [
                     'title' => 'Joueurs',
@@ -91,9 +124,9 @@ class HomeController extends AbstractController
 
         $gameStatsCollection = new GameStatsCollection();
         $gameStatsCollection->addAll($player->getGameStats());
-        $playerAverages = $gameStatsCollection->getAllGamesStatsCalculated($player, 'AVG');
-        $playerTotals = $gameStatsCollection->getAllGamesStatsCalculated($player, 'SUM');
-        $playerAveragesPer40min = $gameStatsCollection->getAllGamesStatsCalculated($player, 'MINUTE');
+        $playerAverages = $gameStatsCollection->getAllGamesStatsCalculated($player, CalculationMethod::AVG);
+        $playerTotals = $gameStatsCollection->getAllGamesStatsCalculated($player, CalculationMethod::SUM);
+        $playerAveragesPer40min = $gameStatsCollection->getAllGamesStatsCalculated($player, CalculationMethod::MINUTE);
 
         $criteria = Criteria::create()->orderBy(["game.number" => Order::Ascending]);
         $sortedResults = $player->getGameStats()->matching($criteria);
