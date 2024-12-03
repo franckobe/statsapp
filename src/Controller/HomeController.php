@@ -32,7 +32,7 @@ class HomeController extends AbstractController
         ];
     }
 
-    #[Route('/equipes/{teamId}/stats-individuelles/{method}', name: 'teamPlayersStats')]
+    #[Route('/equipes/{teamId}/stats-individuelles/{method}', name: 'teamPlayersStats', defaults: ['method' => CalculationMethod::AVG->name])]
     #[Template(template: 'teamPlayersStats.html.twig')]
     public function teamPlayersStats(int $teamId, CalculationMethod $method, TeamRepository $teamRepository): array
     {
@@ -72,7 +72,11 @@ class HomeController extends AbstractController
 
         return [
             'games' => $games,
-            'message' => 'Match par match',
+            'breadcrumb' => [
+                [
+                    'title' => 'Matchs',
+                ]
+            ]
         ];
     }
 

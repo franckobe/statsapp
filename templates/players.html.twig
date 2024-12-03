@@ -12,8 +12,8 @@
         <tbody>
         {% for player in players %}
             <tr>
-                <td><a href="{{ path('player', {playerId: player.id}) }}">{{ player.name }}</a></td>
-                <td><a href="{{ path('teamPlayersStats', {teamId: player.team.id, method: 'AVG'}) }}">{{ player.team.name }}</a></td>
+                <td><a href="{{ path('player', {playerId: player.id}) }}" class="w-full h-full block">{{ player.name }}</a></td>
+                <td><a href="{{ path('teamPlayersStats', {teamId: player.team.id}) }}" class="w-full h-full block">{{ player.team.name }}</a></td>
             </tr>
         {% endfor %}
         </tbody>

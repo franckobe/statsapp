@@ -81,7 +81,7 @@ h1 {
 }
 
 .btn-group {
-    @apply flex rounded border border-purple-200 overflow-hidden
+    @apply flex rounded-2xl border border-purple-200 overflow-hidden
 }
 .btn-group > * {
     @apply py-2 px-3
