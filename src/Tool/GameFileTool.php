@@ -25,15 +25,27 @@ class GameFileTool
     {
         $this->fileContent = Pdf::getText($filePath, null, [
             'raw'
-        ]);;
+        ]);
 
         $this->process();
     }
 
     private function process(): void
     {
-        $this->fileContent = str_replace(array('Istres Sport BC', 'Istres Sports Basket Club', 'Istres Sport Basket Club'), 'Istres Sports BC', $this->fileContent);
-        $this->fileContent = str_replace(array('Elias Agba Adouma', 'Ahmed Ibrahim'), array('Elias Agba Yadouma', 'Ibrahim Ahmed'), $this->fileContent);
+        $this->fileContent = str_replace([
+            'Istres Sport BC',
+            'Istres Sports Basket Club',
+            'Istres Sport Basket Club'
+        ], 'Istres Sports BC', $this->fileContent);
+        $this->fileContent = str_replace([
+            'Elias Agba Adouma',
+            'Ahmed Ibrahim',
+            'Union Sportive Grassoise',
+        ], [
+            'Elias Agba Yadouma',
+            'Ibrahim Ahmed',
+            'Us Grassoise',
+        ], $this->fileContent);
 
         $lines = explode("\n", $this->fileContent);
 

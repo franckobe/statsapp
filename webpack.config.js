@@ -13,7 +13,6 @@ Encore
     .setPublicPath('/build')
     // only needed for CDN's or subdirectory deploy
     //.setManifestKeyPrefix('build/')
-    .enablePostCssLoader()
 
     /*
      * ENTRY CONFIG
@@ -22,6 +21,7 @@ Encore
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
     .addEntry('app', './assets/app.js')
+    .addEntry('addGame', './assets/js/addGame.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
@@ -54,8 +54,10 @@ Encore
         config.corejs = '3.38';
     })
 
+    .enablePostCssLoader()
+
     // enables Sass/SCSS support
-    //.enableSassLoader()
+    .enableSassLoader()
 
     // uncomment if you use TypeScript
     //.enableTypeScriptLoader()
@@ -72,7 +74,9 @@ Encore
 
     .configureDevServerOptions(options => {
         options.liveReload = true;
-        options.hot = true;
+        options.static = {
+            watch: false
+        };
         options.watchFiles = {
             paths: ['src/**/*.php', 'templates/**/*'],
         };

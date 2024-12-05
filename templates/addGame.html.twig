@@ -10,5 +10,6 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{ asset('js/addGame.js') }}"></script>
+    {{ parent() }}
+    {{ encore_entry_script_tags('addGame') }}
 {% endblock %}
