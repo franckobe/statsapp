@@ -50,9 +50,12 @@ class GameStatsCollection
         ];
 
         $calculatedStats = [];
+        $gamesPlayed = $this->getOnlyPlayedGames();
+
+        $totalMinutes = array_sum($gamesPlayed->map(fn($gs) => $gs->getMinutes())->toArray());
 
         foreach ($attributes as $attribute) {
-            $values = $this->getOnlyPlayedGames()->map(fn($gs) => $gs->{'get' . ucfirst($attribute)}())->toArray();
+            $values = $gamesPlayed->map(fn($gs) => $gs->{'get' . ucfirst($attribute)}())->toArray();
 
             if ($method === CalculationMethod::SUM) {
                 $calculatedStats[$attribute] = round(array_sum($values), 1);
@@ -61,17 +64,14 @@ class GameStatsCollection
                 $calculatedStats[$attribute] = count($values) > 0 ? round(array_sum($values) / count($values), 1) : 0;
             }
             elseif ($method === CalculationMethod::MINUTE) {
-                $values = $this->getOnlyPlayedGames()->map(function($gs) use ($attribute) {
-                    return $gs->{'get' . ucfirst($attribute)}() / $gs->getMinutes() * 40;
-                })->toArray();
-                $calculatedStats[$attribute] = count($values) > 0 ? round(array_sum($values) / count($values), 1) : 0;
+                $calculatedStats[$attribute] = $totalMinutes ? round(array_sum($values) / $totalMinutes * 40, 1) : 0;
             }
         }
 
         return new GameStatsCalculatedDTO(
             $player,
             $player->getTeam(),
-            count($this->getOnlyPlayedGames()),
+            count($gamesPlayed),
             $calculatedStats['minutes'],
             $calculatedStats['points'],
             $calculatedStats['fgm2'],

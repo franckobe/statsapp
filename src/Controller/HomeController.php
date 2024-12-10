@@ -139,7 +139,7 @@ class HomeController extends AbstractController
         $playerAllStatsDTO = new PlayerAllStatsDTO($player, $playerAverages, $playerTotals, $playerAveragesPer40min, $playerGamesStats);
 
         return [
-            'player' => $playerAllStatsDTO,
+            'playerStats' => $playerAllStatsDTO,
             'breadcrumb' => [
                 [
                     'path' => $this->generateUrl('players'),

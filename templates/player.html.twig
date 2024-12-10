@@ -1,6 +1,12 @@
 {% extends "base.html.twig" %}
 
 {% block main %}
+
+    <div class="w-full flex flex-col items-center mb-4">
+        <h2>{{ playerStats.player.name }}</h2>
+        <h3>{{ playerStats.player.team.name }}</h3>
+    </div>
+
     <div class="w-full max-w-full overflow-x-auto overflow-y-hidden">
         <table class="table table-striped stats-table table-orderable">
             <thead>
@@ -38,7 +44,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for stat in player.games %}
+            {% for stat in playerStats.games %}
                 <tr>
                     <th><a href="{{ path('teamPlayersStats', {teamId: stat.opponentTeam.id, method: 'AVG'}) }}">{{ stat.opponentTeam.name }}</a></th>
                     <td>{{ stat.win ? '✅' : '❌' }}</td>
@@ -75,7 +81,7 @@
             </tbody>
             <tfoot>
 
-            {% for stats in [player.totals, player.averages, player.averagesPer40min] %}
+            {% for stats in [playerStats.totals, playerStats.averages, playerStats.averagesPer40min] %}
                 <tr class="bg-gray-900">
                     <th>{{ ['Tot.', 'Moy.', 'Moy. / 40min'][loop.index0] }}</th>
                     {% if loop.first %}
