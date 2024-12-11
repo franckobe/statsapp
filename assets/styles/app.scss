@@ -53,6 +53,22 @@ h1 {
     }
 }
 
+.btn-group {
+    @apply flex rounded-2xl border border-purple-200 overflow-hidden;
+
+    > * {
+        @apply py-2 px-3;
+
+        &:not(:last-child) {
+            @apply border-r border-purple-200;
+        }
+
+        &.active {
+            @apply bg-purple-800;
+        }
+    }
+}
+
 .table {
     @apply w-full;
 
@@ -67,10 +83,6 @@ h1 {
     tbody {
         tr {
             @apply hover:bg-purple-900;
-
-            &:nth-child(odd) :is(td, th) {
-                @apply bg-gray-700;
-            }
         }
     }
 
@@ -79,11 +91,12 @@ h1 {
     }
 
     &-striped {
-        tbody {
-            tr:nth-child(odd) td:hover,
-            tfoot td:hover {
-                @apply bg-transparent;
-            }
+        tbody tr:nth-child(odd) :is(td, th) {
+            @apply bg-gray-700;
+        }
+        &:has(tbody td:hover) tbody tr:nth-child(odd) td,
+        &:has(tfoot td:hover) tbody tr:nth-child(odd) td {
+            @apply bg-transparent
         }
     }
 
@@ -108,20 +121,9 @@ h1 {
             }
         }
     }
-}
-
-.btn-group {
-    @apply flex rounded-2xl border border-purple-200 overflow-hidden;
-
-    > * {
-        @apply py-2 px-3;
-
-        &:not(:last-child) {
-            @apply border-r border-purple-200;
-        }
-
-        &.active {
-            @apply bg-purple-800;
+    &-filterable {
+        input {
+            @apply text-white bg-transparent w-full outline-0;
         }
     }
 }
@@ -162,7 +164,7 @@ h1 {
         tr:hover :is(th, td) {
             @apply bg-purple-900;
 
-            td:hover::after {
+            &:is(td):hover::after {
                 content: '';
                 height: 10000px;
                 left: 0;
@@ -173,11 +175,5 @@ h1 {
                 @apply bg-purple-900/40;
             }
         }
-    }
-}
-
-.table-filterable {
-    input {
-        @apply text-white bg-transparent w-full outline-0;
     }
 }
