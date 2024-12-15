@@ -9,11 +9,16 @@ use App\Enum\CalculationMethod;
 use App\Repository\GameRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
+use App\Tool\Charts\PlayerGamesChart;
+use App\Tool\Charts\PlayerRadarChart;
+use App\Tool\Charts\StatsChart;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Order;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
 
 class HomeController extends AbstractController
 {
@@ -140,6 +145,10 @@ class HomeController extends AbstractController
 
         return [
             'playerStats' => $playerAllStatsDTO,
+            'charts' => [
+                new PlayerRadarChart($player, $playerAverages),
+                new PlayerGamesChart($playerGamesStats),
+            ],
             'breadcrumb' => [
                 [
                     'path' => $this->generateUrl('players'),
