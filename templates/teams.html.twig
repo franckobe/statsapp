@@ -12,7 +12,7 @@
         <tbody>
         {% for team in teams %}
             <tr>
-                <td>{{ team.name }}</td>
+                <td><a href="{{ path('teamPlayersStats', {teamId: team.id}) }}">{{ team.name }}</a></td>
                 {% for method in calculationMethods %}
                     <td class="text-center w-0.5">
                         <a href="{{ path('teamPlayersStats', {teamId: team.id, method: method.name}) }}" class="whitespace-nowrap">{{ method.value }}</a>

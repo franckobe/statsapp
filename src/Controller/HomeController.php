@@ -5,20 +5,19 @@ namespace App\Controller;
 use App\Collection\GameStatsCollection;
 use App\DTO\GameStatsCollectionDTO;
 use App\DTO\PlayerAllStatsDTO;
+use App\Entity\Game;
+use App\Entity\GameStats;
 use App\Enum\CalculationMethod;
 use App\Repository\GameRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
 use App\Tool\Charts\PlayerGamesChart;
 use App\Tool\Charts\PlayerRadarChart;
-use App\Tool\Charts\StatsChart;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Order;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
-use Symfony\UX\Chartjs\Model\Chart;
 
 class HomeController extends AbstractController
 {
@@ -37,25 +36,45 @@ class HomeController extends AbstractController
         ];
     }
 
-    #[Route('/equipes/{teamId}/stats-individuelles/{method}', name: 'teamPlayersStats', defaults: ['method' => CalculationMethod::AVG->name])]
+    #[Route('/equipes/{teamId}/{method}', name: 'teamPlayersStats', defaults: ['method' => CalculationMethod::AVG->name])]
     #[Template(template: 'teamPlayersStats.html.twig')]
-    public function teamPlayersStats(int $teamId, CalculationMethod $method, TeamRepository $teamRepository): array
+    public function teamPlayersStats(int $teamId, CalculationMethod $method, TeamRepository $teamRepository, GameRepository $gameRepository): array
     {
         $team = $teamRepository->find($teamId);
 
-        $playerStats = [];
+        $playersStats = [];
+        $teamStatsCollection = new GameStatsCollection();
         foreach ($team->getPlayers() as $player) {
             $gameStatsCollection = new GameStatsCollection();
             $gameStatsCollection->addAll($player->getGameStats());
-            $playerStats[] = $gameStatsCollection->getAllGamesStatsCalculated($player, $method);
+            $teamStatsCollection->addAll($player->getGameStats());
+            $playersStats[] = $gameStatsCollection->getAllPlayerGamesStatsCalculated($method, $player);
         }
 
-        usort($playerStats, function ($a, $b) {
+        usort($playersStats, function ($a, $b) {
             return $b->points <=> $a->points;
         });
 
+        $opponentTeamStatsCollection = new GameStatsCollection();
+        foreach ($gameRepository->findAll() as $game) {
+            if ($game->getHomeTeam() !== $team && $game->getAwayTeam() !== $team) {
+                continue;
+            }
+            foreach ($game->getGameStats() as $gameStats) {
+                if ($gameStats->getPlayer()->getTeam()->getId() === $team->getId()) {
+                    continue;
+                }
+                $opponentTeamStatsCollection->add($gameStats);
+            }
+        }
+
+        $teamStats = $method !== CalculationMethod::MINUTE ? $teamStatsCollection->getAllTeamGamesStatsCalculated($method, $team) : null;
+        $opponentTeamsStats = $method !== CalculationMethod::MINUTE ? $opponentTeamStatsCollection->getAllOpponentTeamsGamesStatsCalculated($method) : null;
+
         return [
-            'stats' => $playerStats,
+            'stats' => $playersStats,
+            'teamStats' => $teamStats,
+            'opponentTeamsStats' => $opponentTeamsStats,
             'calculationMethods' => CalculationMethod::cases(),
             'breadcrumb' => [
                 [
@@ -95,9 +114,24 @@ class HomeController extends AbstractController
         $sortedResults = $game->getGameStats()->matching($criteria);
         $boxScore = GameStatsCollectionDTO::fromCollection($sortedResults);
 
+        $homeTeamGameStatsCollection = new GameStatsCollection();
+        $awayTeamGameStatsCollection = new GameStatsCollection();
+        foreach ($game->getGameStats() as $gameStats) {
+            if ($gameStats->getPlayer()->getTeam()->getId() === $game->getHomeTeam()->getId()) {
+                $homeTeamGameStatsCollection->add($gameStats);
+            }
+            if ($gameStats->getPlayer()->getTeam()->getId() === $game->getAwayTeam()->getId()) {
+                $awayTeamGameStatsCollection->add($gameStats);
+            }
+        }
+
         return [
             'game' => $game,
             'boxscore' => $boxScore,
+            'totals' => [
+                $game->getHomeTeam()->getId() => $homeTeamGameStatsCollection->getAllTeamGamesStatsCalculated(CalculationMethod::SUM, $game->getHomeTeam()),
+                $game->getAwayTeam()->getId() => $awayTeamGameStatsCollection->getAllTeamGamesStatsCalculated(CalculationMethod::SUM, $game->getAwayTeam()),
+            ],
             'breadcrumb' => [
                 [
                     'path' => $this->generateUrl('games'),
@@ -133,9 +167,9 @@ class HomeController extends AbstractController
 
         $gameStatsCollection = new GameStatsCollection();
         $gameStatsCollection->addAll($player->getGameStats());
-        $playerAverages = $gameStatsCollection->getAllGamesStatsCalculated($player, CalculationMethod::AVG);
-        $playerTotals = $gameStatsCollection->getAllGamesStatsCalculated($player, CalculationMethod::SUM);
-        $playerAveragesPer40min = $gameStatsCollection->getAllGamesStatsCalculated($player, CalculationMethod::MINUTE);
+        $playerAverages = $gameStatsCollection->getAllPlayerGamesStatsCalculated(CalculationMethod::AVG, $player);
+        $playerTotals = $gameStatsCollection->getAllPlayerGamesStatsCalculated(CalculationMethod::SUM, $player);
+        $playerAveragesPer40min = $gameStatsCollection->getAllPlayerGamesStatsCalculated(CalculationMethod::MINUTE, $player);
 
         $criteria = Criteria::create()->orderBy(["game.number" => Order::Ascending]);
         $sortedResults = $player->getGameStats()->matching($criteria);

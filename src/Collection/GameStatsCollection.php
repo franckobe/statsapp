@@ -5,6 +5,7 @@ namespace App\Collection;
 use App\DTO\GameStatsCalculatedDTO;
 use App\Entity\GameStats;
 use App\Entity\Player;
+use App\Entity\Team;
 use App\Enum\CalculationMethod;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,9 +26,6 @@ class GameStatsCollection
 
     public function addAll(Collection $allGameStats): void
     {
-        if ($this->allGamesStats->count()) {
-            $this->allGamesStats = new ArrayCollection();
-        }
         foreach ($allGameStats as $gameStats) {
             $this->add($gameStats);
         }
@@ -40,7 +38,22 @@ class GameStatsCollection
         });
     }
 
-    public function getAllGamesStatsCalculated(Player $player, CalculationMethod $method): GameStatsCalculatedDTO
+    public function getAllTeamGamesStatsCalculated(CalculationMethod $method, Team $team): GameStatsCalculatedDTO
+    {
+        return $this->getAllGamesStatsCalculated(method: $method, team: $team);
+    }
+
+    public function getAllOpponentTeamsGamesStatsCalculated(CalculationMethod $method): GameStatsCalculatedDTO
+    {
+        return $this->getAllGamesStatsCalculated(method: $method);
+    }
+
+    public function getAllPlayerGamesStatsCalculated(CalculationMethod $method, Player $player): GameStatsCalculatedDTO
+    {
+        return $this->getAllGamesStatsCalculated(method: $method, player: $player);
+    }
+
+    public function getAllGamesStatsCalculated(CalculationMethod $method, ?Player $player = null, ?Team $team = null): GameStatsCalculatedDTO
     {
         $attributes = [
             'minutes', 'points', 'fgm2', 'fga2', 'fgm3', 'fga3', 'ftm', 'fta',
@@ -50,28 +63,48 @@ class GameStatsCollection
         ];
 
         $calculatedStats = [];
+        foreach ($attributes as $attribute) {
+            $calculatedStats[$attribute] = 0;
+        }
+
         $gamesPlayed = $this->getOnlyPlayedGames();
 
         $totalMinutes = array_sum($gamesPlayed->map(fn($gs) => $gs->getMinutes())->toArray());
+
+        $nbGamesPlayed = count($gamesPlayed);
+        if ($player === null) {
+            $gamesList = [];
+            foreach($gamesPlayed as $game) {
+                if (!in_array($game->getGame()->getNumber(), $gamesList)) {
+                    $gamesList[] = $game->getGame()->getNumber();
+                }
+            }
+            $nbGamesPlayed = count($gamesList);
+        }
 
         foreach ($attributes as $attribute) {
             $values = $gamesPlayed->map(fn($gs) => $gs->{'get' . ucfirst($attribute)}())->toArray();
 
             if ($method === CalculationMethod::SUM) {
-                $calculatedStats[$attribute] = round(array_sum($values), 1);
+                $calculatedStats[$attribute] += round(array_sum($values), 1);
             }
             elseif ($method === CalculationMethod::AVG) {
-                $calculatedStats[$attribute] = count($values) > 0 ? round(array_sum($values) / count($values), 1) : 0;
+                $coeff = !$player ? $nbGamesPlayed : count($values);
+                $calculatedStats[$attribute] += $coeff > 0 ? round(array_sum($values) / $coeff, 1) : 0;
             }
             elseif ($method === CalculationMethod::MINUTE) {
-                $calculatedStats[$attribute] = $totalMinutes ? round(array_sum($values) / $totalMinutes * 40, 1) : 0;
+                $calculatedStats[$attribute] += $totalMinutes ? round(array_sum($values) / $totalMinutes * 40, 1) : 0;
             }
+        }
+
+        if ($player !== null) {
+            $team = $player->getTeam();
         }
 
         return new GameStatsCalculatedDTO(
             $player,
-            $player->getTeam(),
-            count($gamesPlayed),
+            $team,
+            $nbGamesPlayed,
             $calculatedStats['minutes'],
             $calculatedStats['points'],
             $calculatedStats['fgm2'],

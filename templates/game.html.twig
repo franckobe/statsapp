@@ -78,6 +78,37 @@
                     {% endif %}
                 {% endfor %}
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th>{{ totals[team.id].team.name }}</th>
+                        <td>{{ totals[team.id].minutes }}</td>
+                        <td>{{ totals[team.id].points }}</td>
+                        <td>{{ totals[team.id].fgm2 }}</td>
+                        <td>{{ totals[team.id].fga2 }}</td>
+                        <td>{{ totals[team.id].fg2Percentage }}</td>
+                        <td>{{ totals[team.id].fgm3 }}</td>
+                        <td>{{ totals[team.id].fga3 }}</td>
+                        <td>{{ totals[team.id].fg3Percentage }}</td>
+                        <td>{{ totals[team.id].fgmTot }}</td>
+                        <td>{{ totals[team.id].fgaTot }}</td>
+                        <td>{{ totals[team.id].fgTotPercentage }}</td>
+                        <td>{{ totals[team.id].ftm }}</td>
+                        <td>{{ totals[team.id].fta }}</td>
+                        <td>{{ totals[team.id].ftPercentage }}</td>
+                        <td>{{ totals[team.id].offensiveRebound }}</td>
+                        <td>{{ totals[team.id].defensiveRebound }}</td>
+                        <td>{{ totals[team.id].rebound }}</td>
+                        <td>{{ totals[team.id].foul }}</td>
+                        <td>{{ totals[team.id].foulProvoked }}</td>
+                        <td>{{ totals[team.id].steal }}</td>
+                        <td>{{ totals[team.id].turnover }}</td>
+                        <td>{{ totals[team.id].assist }}</td>
+                        <td>{{ totals[team.id].block }}</td>
+                        <td>{{ totals[team.id].blockReceived }}</td>
+                        <td>{{ totals[team.id].efficiency }}</td>
+                        <td>{{ totals[team.id].plusMinus }}</td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     {% endfor %}

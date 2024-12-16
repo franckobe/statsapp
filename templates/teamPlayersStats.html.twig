@@ -78,6 +78,70 @@
                 </tr>
             {% endfor %}
             </tbody>
+            {% if (teamStats) %}
+                <tfoot>
+                    <tr>
+                        <th>{{ teamStats.team.name }}</th>
+                        <td>{{ teamStats.gamesPlayed }}</td>
+                        <td>{{ teamStats.minutes }}</td>
+                        <td>{{ teamStats.points }}</td>
+                        <td>{{ teamStats.fgm2 }}</td>
+                        <td>{{ teamStats.fga2 }}</td>
+                        <td>{{ teamStats.fg2Percentage }}</td>
+                        <td>{{ teamStats.fgm3 }}</td>
+                        <td>{{ teamStats.fga3 }}</td>
+                        <td>{{ teamStats.fg3Percentage }}</td>
+                        <td>{{ teamStats.fgmTot }}</td>
+                        <td>{{ teamStats.fgaTot }}</td>
+                        <td>{{ teamStats.fgTotPercentage }}</td>
+                        <td>{{ teamStats.ftm }}</td>
+                        <td>{{ teamStats.fta }}</td>
+                        <td>{{ teamStats.ftPercentage }}</td>
+                        <td>{{ teamStats.offensiveRebound }}</td>
+                        <td>{{ teamStats.defensiveRebound }}</td>
+                        <td>{{ teamStats.rebound }}</td>
+                        <td>{{ teamStats.foul }}</td>
+                        <td>{{ teamStats.foulProvoked }}</td>
+                        <td>{{ teamStats.steal }}</td>
+                        <td>{{ teamStats.turnover }}</td>
+                        <td>{{ teamStats.assist }}</td>
+                        <td>{{ teamStats.block }}</td>
+                        <td>{{ teamStats.blockReceived }}</td>
+                        <td>{{ teamStats.efficiency }}</td>
+                        <td>{{ teamStats.plusMinus }}</td>
+                    </tr>
+                    <tr>
+                        <th>Adversaires</th>
+                        <td>{{ opponentTeamsStats.gamesPlayed }}</td>
+                        <td>{{ opponentTeamsStats.minutes }}</td>
+                        <td>{{ opponentTeamsStats.points }}</td>
+                        <td>{{ opponentTeamsStats.fgm2 }}</td>
+                        <td>{{ opponentTeamsStats.fga2 }}</td>
+                        <td>{{ opponentTeamsStats.fg2Percentage }}</td>
+                        <td>{{ opponentTeamsStats.fgm3 }}</td>
+                        <td>{{ opponentTeamsStats.fga3 }}</td>
+                        <td>{{ opponentTeamsStats.fg3Percentage }}</td>
+                        <td>{{ opponentTeamsStats.fgmTot }}</td>
+                        <td>{{ opponentTeamsStats.fgaTot }}</td>
+                        <td>{{ opponentTeamsStats.fgTotPercentage }}</td>
+                        <td>{{ opponentTeamsStats.ftm }}</td>
+                        <td>{{ opponentTeamsStats.fta }}</td>
+                        <td>{{ opponentTeamsStats.ftPercentage }}</td>
+                        <td>{{ opponentTeamsStats.offensiveRebound }}</td>
+                        <td>{{ opponentTeamsStats.defensiveRebound }}</td>
+                        <td>{{ opponentTeamsStats.rebound }}</td>
+                        <td>{{ opponentTeamsStats.foul }}</td>
+                        <td>{{ opponentTeamsStats.foulProvoked }}</td>
+                        <td>{{ opponentTeamsStats.steal }}</td>
+                        <td>{{ opponentTeamsStats.turnover }}</td>
+                        <td>{{ opponentTeamsStats.assist }}</td>
+                        <td>{{ opponentTeamsStats.block }}</td>
+                        <td>{{ opponentTeamsStats.blockReceived }}</td>
+                        <td>{{ opponentTeamsStats.efficiency }}</td>
+                        <td>{{ opponentTeamsStats.plusMinus }}</td>
+                    </tr>
+                </tfoot>
+            {% endif %}
         </table>
     </div>
 {% endblock %}

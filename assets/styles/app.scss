@@ -94,8 +94,7 @@ h1 {
         tbody tr:nth-child(odd) :is(td, th) {
             @apply bg-gray-700;
         }
-        &:has(tbody td:hover) tbody tr:nth-child(odd) td,
-        &:has(tfoot td:hover) tbody tr:nth-child(odd) td {
+        &:has(tbody td:hover) tbody tr:nth-child(odd) td {
             @apply bg-transparent
         }
     }
@@ -175,5 +174,9 @@ h1 {
                 @apply bg-purple-900/40;
             }
         }
+    }
+
+    tfoot {
+        @apply border-t-8 border-purple-200
     }
 }

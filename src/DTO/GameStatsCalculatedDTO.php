@@ -15,8 +15,8 @@ class GameStatsCalculatedDTO
     public float $ftPercentage;
     public float $rebound;
     public function __construct(
-        public Player $player,
-        public Team $team,
+        public ?Player $player,
+        public ?Team $team,
         public int $gamesPlayed,
         public float $minutes,
         public float $points,
