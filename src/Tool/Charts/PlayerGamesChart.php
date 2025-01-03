@@ -37,6 +37,7 @@ class PlayerGamesChart extends StatsChart
             $dataSets[] = [
                 'label' => $label,
                 'data' => $data,
+                'hidden' => $label !== 'PTS',
             ];
         }
 

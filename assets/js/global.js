@@ -1,3 +1,5 @@
+import {Chart} from "chart.js"
+
 function sortTable(table, columnIndex, asc = true) {
   const tbody = table.querySelector("tbody");
   const rows = Array.from(tbody.querySelectorAll("tr"));
@@ -47,9 +49,11 @@ function filterTable(table, columnIndex, query) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
+
   document.querySelectorAll(".table-filterable").forEach((table) => {
     addFiltersToTable(table)
   })
+
   document.querySelectorAll(".table-orderable").forEach((table) => {
     table.querySelectorAll("thead th").forEach((header, index) => {
       let ascending = true
@@ -63,4 +67,17 @@ document.addEventListener('DOMContentLoaded', () => {
       })
     })
   })
+
+  document.querySelectorAll('.player-charts').forEach((chartElement) => {
+    const chartInstance = Chart.getChart(chartElement);
+    chartInstance.options.plugins.legend.onClick = (e, legendItem) => {
+      const datasets = chartInstance.data.datasets;
+      const clickedIndex = legendItem.datasetIndex;
+      datasets.forEach((dataset, index) => {
+        dataset.hidden = index !== clickedIndex;
+      });
+      chartInstance.update();
+    };
+  })
+
 })
