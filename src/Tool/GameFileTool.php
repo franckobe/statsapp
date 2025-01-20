@@ -42,11 +42,15 @@ class GameFileTool
             'Ahmed Ibrahim',
             'Union Sportive Grassoise',
             'Frejus Var Basket ASML',
+            'Olympique Cabries Calas',
+            'David-Olivier'
         ], [
             'Elias Agba Yadouma',
             'Ibrahim Ahmed',
             'Us Grassoise',
             'Fréjus Var Basket AMSL',
+            'O Cabries Calas',
+            'David Olivier',
         ], $this->fileContent);
 
         $lines = explode("\n", $this->fileContent);
