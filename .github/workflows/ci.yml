@@ -1,2 +1,49 @@
+name: Deploy Symfony Dockerized
+
 on:
+  push:
+    branches:
+      - main
+
+env:
+  SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
+  VPS_HOST: ${{ secrets.VPS_HOST }}
+  VPS_USER: ${{ secrets.VPS_USER }}
+  VPS_DEPLOY_DIR: ${{ secrets.VPS_DEPLOY_DIR }}
+
 jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Deploy to VPS
+      - name: Deploy application
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          # Connexion au VPS pour cloner ou mettre à jour le dépôt
+          ssh -p $SSH_PORT $VPS_USER@$VPS_HOST << 'EOF'
+            set -e
+            # Créer le répertoire si nécessaire
+            [ ! -d "$VPS_DEPLOY_DIR" ] && mkdir -p "$VPS_DEPLOY_DIR"
+            cd "$VPS_DEPLOY_DIR"
+          
+            # Cloner le dépôt si non existant, sinon pull les dernières modifications
+            if [ ! -d ".git" ]; then
+              git clone git@github.com:${{ github.repository }} . 
+            else
+              git reset --hard
+              git pull origin main
+            fi
+          
+            # Construire et démarrer les conteneurs
+            docker compose up -d --build

@@ -1,29 +1,49 @@
 services:
-    php:
-        build: ./docker/php
-        volumes:
-            - .:/var/www:delegated
-        depends_on:
-            - database
-    
     nginx:
-        build: ./docker/nginx
-        ports:
-            - "8000:80"
+        container_name: nginx
+        build:
+            context: .
+            dockerfile: ./docker/nginx/Dockerfile
         volumes:
-            - ./public:/var/www/public:delegated
+            - ./public:/var/www/public:ro # On ne partage que le dossier public avec Nginx
+        ports:
+            - "80:80"
+        restart: unless-stopped
         depends_on:
             - php
+        networks:
+            - app-network
+    
+    php:
+        container_name: php
+        build:
+            context: .
+            dockerfile: ./docker/php/Dockerfile
+        restart: unless-stopped
+        volumes:
+            - .:/var/www:rw 
+            - ./var:/var/www/var:rw 
+        working_dir: /var/www
+        depends_on:
+            - database
+        networks:
+            - app-network
     
     database:
-        image: postgres:16-alpine
+        image: postgres:16
+        restart: unless-stopped
         environment:
             POSTGRES_DB: ${POSTGRES_DB:-app}
-            # You should definitely change the password in production
-            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe123}
             POSTGRES_USER: ${POSTGRES_USER:-app}
         volumes:
-            - database_data:/var/lib/postgresql/data:rw
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
 
 volumes:
-    database_data:      
+    postgres_data:
