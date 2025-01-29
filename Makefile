@@ -1,61 +1,93 @@
-# Executables (local)
-DOCKER_COMP = docker compose
-
-# Docker containers
-PHP_CONT = $(DOCKER_COMP) exec php
-
-# Executables
-PHP      = $(PHP_CONT) php
-COMPOSER = $(PHP_CONT) composer
-SYMFONY  = $(PHP) bin/console
-
-# Misc
-.DEFAULT_GOAL = help
-.PHONY        : help build up start down logs sh composer vendor sf cc test
-
-## —— 🎵 🐳 The Symfony Docker Makefile 🐳 🎵 ——————————————————————————————————
-help: ## Outputs this help screen
-	@grep -E '(^[a-zA-Z0-9\./_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
-
-## —— Docker 🐳 ————————————————————————————————————————————————————————————————
-build: ## Builds the Docker images
-	@$(DOCKER_COMP) build --pull --no-cache
-
-up: ## Start the docker hub in detached mode (no logs)
-	@$(DOCKER_COMP) up --detach
-
-start: build up ## Build and start the containers
-
-down: ## Stop the docker hub
-	@$(DOCKER_COMP) down --remove-orphans
-
-logs: ## Show live logs
-	@$(DOCKER_COMP) logs --tail=0 --follow
-
-sh: ## Connect to the FrankenPHP container
-	@$(PHP_CONT) sh
-
-bash: ## Connect to the FrankenPHP container via bash so up and down arrows go to previous commands
-	@$(PHP_CONT) bash
-
-test: ## Start tests with phpunit, pass the parameter "c=" to add options to phpunit, example: make test c="--group e2e --stop-on-failure"
-	@$(eval c ?=)
-	@$(DOCKER_COMP) exec -e APP_ENV=test php bin/phpunit $(c)
+#######################################
+## 📦 PHP-Nginx Docker template for Symfony projects
+## 👤 Author: Franck GARROS
+#######################################
 
 
-## —— Composer 🧙 ——————————————————————————————————————————————————————————————
-composer: ## Run composer, pass the parameter "c=" to run a given command, example: make composer c='req symfony/orm-pack'
-	@$(eval c ?=)
-	@$(COMPOSER) $(c)
+PROJECT_NAME = php-nginx
+DOCKER_COMPOSE = docker-compose --project-name $(PROJECT_NAME)
+PHP = php
+SYMFONY = symfony
+SYMFONY_CONSOLE = $(PHP) bin/console
 
-vendor: ## Install vendors according to the current composer.lock file
-vendor: c=install --prefer-dist --no-dev --no-progress --no-scripts --no-interaction
-vendor: composer
+#######################################
+## 📖 Help
+#######################################
+.PHONY: help
+help:
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Available targets:"
+	@echo ""
+	@echo "🛠️  Docker Commands"
+	@grep -E '^(prune|build|stop|start|reload|logs):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@echo ""
+	@echo "🔧 Symfony Commands"
+	@grep -E '^(init-project|init-database|database-create|database-drop|database-migrate):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-## —— Symfony 🎵 ———————————————————————————————————————————————————————————————
-sf: ## List all Symfony commands or pass the parameter "c=" to run a given command, example: make sf c=about
-	@$(eval c ?=)
-	@$(SYMFONY) $(c)
+#######################################
+## 🛠️ Docker
+#######################################
+.PHONY: prune build stop start reload logs
 
-cc: c=c:c ## Clear the cache
-cc: sf
+prune: ## 🧹 Remove unused Docker resources
+	@echo "Pruning Docker..."
+	docker system prune -f
+	docker volume prune -f
+	docker network prune -f
+	@volumes=$(docker volume ls -q); \
+	if [ -n "$$volumes" ]; then \
+	  $(DOCKER_COMPOSE) volume rm $volumes; \
+	else \
+	  echo "No Docker volumes to remove."; \
+	fi
+
+build: ## 🏗️ Build and start containers in detached mode
+	@echo "Building container..."
+	$(DOCKER_COMPOSE) up --build -d
+
+stop: ## ⏹️ Stop containers without removing them
+	@echo "Stopping container..."
+	$(DOCKER_COMPOSE) stop
+
+start: ## ▶️ Start containers without rebuilding
+	@echo "Starting container..."
+	$(DOCKER_COMPOSE) start
+
+reload: ## 🔄 Restart containers with rebuild
+	@echo "Reloading container..."
+	make stop
+	make prune
+	make build
+
+logs: ## 📜 Show logs of all containers
+	@echo "Showing logs..."
+	$(DOCKER_COMPOSE) logs -f
+
+#######################################
+## 🔧 Symfony
+#######################################
+.PHONY: init-project init-database database-create database-drop database-migrate
+
+init-project: ## 📦 Create Symfony project inside the container
+	@echo "Creating Symfony project..."
+	chmod +x ./docker/php/initProject.sh
+	./docker/php/initProject.sh
+
+init-db: ## 🗄️ Initialize Symfony database and install ORM dependencies
+	@echo "Creating database..."
+	$(DOCKER_COMPOSE) exec php composer require symfony/orm-pack
+	$(DOCKER_COMPOSE) exec php composer require --dev symfony/maker-bundle
+	make reload
+
+database-create: ## Create the database
+	@echo "Creating database..."
+	$(SYMFONY_CONSOLE) doctrine:database:create --if-not-exists
+
+database-drop: ## Drop the database
+	@echo "Dropping database..."
+	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists
+
+database-migrate: ## Migrate the database
+	@echo "Migrating database..."
+	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction
