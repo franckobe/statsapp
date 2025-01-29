@@ -30,6 +30,7 @@ services:
             - app-network
     
     database:
+        container_name: database
         image: postgres:16
         restart: unless-stopped
         environment:
