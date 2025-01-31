@@ -5,7 +5,9 @@ services:
             context: .
             dockerfile: ./docker/nginx/Dockerfile
         volumes:
-            - ./public:/var/www/public:ro # On ne partage que le dossier public avec Nginx
+            - ./public:/var/www/public:ro 
+            - /etc/ssl/fgarros.fr/fullchain.pem:/etc/ssl/fullchain.pem:ro
+            - /etc/ssl/fgarros.fr/privkey.pem:/etc/ssl/privkey.pem:ro
         ports:
             - "80:80"
             - "443:443"
