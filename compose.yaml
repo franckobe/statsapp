@@ -31,6 +31,8 @@ services:
             - database
         networks:
             - app-network
+        expose:
+            - "9000"
     
     database:
         container_name: database
