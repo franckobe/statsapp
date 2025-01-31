@@ -5,7 +5,7 @@
 
 
 PROJECT_NAME = php-nginx
-DOCKER_COMPOSE = docker-compose --project-name $(PROJECT_NAME)
+DOCKER_COMPOSE = docker compose --project-name $(PROJECT_NAME)
 PHP = php
 SYMFONY = symfony
 SYMFONY_CONSOLE = $(PHP) bin/console
