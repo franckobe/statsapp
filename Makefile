@@ -9,6 +9,7 @@ DOCKER_COMPOSE = docker-compose --project-name $(PROJECT_NAME)
 PHP = php
 SYMFONY = symfony
 SYMFONY_CONSOLE = $(PHP) bin/console
+DOCKER_EXEC = docker exec -it $(PHP) bin/console
 
 #######################################
 ## 📖 Help
@@ -82,12 +83,12 @@ init-db: ## 🗄️ Initialize Symfony database and install ORM dependencies
 
 database-create: ## Create the database
 	@echo "Creating database..."
-	$(SYMFONY_CONSOLE) doctrine:database:create --if-not-exists
+	$(DOCKER_EXEC) doctrine:database:create --if-not-exists
 
 database-drop: ## Drop the database
 	@echo "Dropping database..."
-	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists
+	$(DOCKER_EXEC) doctrine:database:drop --force --if-exists
 
 database-migrate: ## Migrate the database
 	@echo "Migrating database..."
-	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction
+	$(DOCKER_EXEC) doctrine:migrations:migrate --no-interaction

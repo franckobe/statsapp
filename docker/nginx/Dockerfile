@@ -1,9 +1,14 @@
 FROM nginx:stable-alpine
 LABEL maintainer="Franck GARROS"
 
+ENV APP_ENV=$APP_ENV
+
 # Copy the nginx configuration file
 COPY ./docker/nginx/conf/nginx.conf /etc/nginx/nginx.conf
 COPY ./docker/nginx/conf/default.conf /etc/nginx/conf.d/default.conf
+RUN if [ "$APP_ENV" = "prod" ]; then \
+      cp ./docker/nginx/conf/ssl.conf /etc/nginx/conf.d/ssl.conf; \
+    fi
 
 # Update and upgrade the system
 RUN apk update && apk upgrade
