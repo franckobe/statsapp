@@ -8,16 +8,12 @@ RUN apt-get update && apt-get install -y \
     zip unzip git libzip-dev poppler-utils libpq-dev \
     && docker-php-ext-install zip pdo pdo_pgsql pgsql
 
-WORKDIR /var/www
-
 # Installer Node.js et npm
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs
 
 # Install Composer \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer install --no-dev --optimize-autoloader
-RUN npm build
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
