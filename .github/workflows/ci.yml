@@ -22,7 +22,9 @@ jobs:
           script: |
             cd ${{ secrets.VPS_DEPLOY_DIR }}
             git pull origin main
-            echo ${{ secrets.PROD_ENV }} > .env
+            cat << 'EOF' > .env
+            ${{ secrets.PROD_ENV }}
+            EOF
             docker compose down
             docker compose up -d --build
             docker system prune -af
