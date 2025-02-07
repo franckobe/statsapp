@@ -8,6 +8,7 @@ ENV APP_ENV=${APP_ENV}
 COPY ./docker/nginx/conf/nginx.conf /etc/nginx/nginx.conf
 COPY ./docker/nginx/conf/default.conf /etc/nginx/conf.d/default.conf
 RUN if [ "$APP_ENV" = "prod" ]; then \
+      pwd; \
       cp ./docker/nginx/conf/ssl.conf /etc/nginx/conf.d/ssl.conf; \
     fi
 
