@@ -1,7 +1,8 @@
 FROM nginx:stable-alpine
 LABEL maintainer="Franck GARROS"
 
-ENV APP_ENV=$APP_ENV
+ARG APP_ENV
+ENV APP_ENV=${APP_ENV}
 
 # Copy the nginx configuration file
 COPY ./docker/nginx/conf/nginx.conf /etc/nginx/nginx.conf

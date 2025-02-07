@@ -26,5 +26,7 @@ jobs:
             ${{ secrets.PROD_ENV }}
             EOF
             docker compose down
-            docker compose up -d --build
+            export APP_ENV=prod
+            docker compose build --build-arg APP_ENV=$APP_ENV
+            docker compose up -d
             docker system prune -af
