@@ -5,7 +5,9 @@ ARG APP_ENV
 ENV APP_ENV=${APP_ENV}
 
 # Copy the nginx configuration file
-COPY ./docker/nginx/conf /etc/nginx/conf.d
+COPY ./docker/nginx/conf/nginx.conf /etc/nginx/nginx.conf
+COPY ./docker/nginx/conf/default.conf /etc/nginx/conf.d/default.conf
+COPY ./docker/nginx/conf/ssl.conf /etc/nginx/conf.d/ssl.conf
 
 # Déplacer ssl.conf uniquement si APP_ENV=prod
 RUN if [ "$APP_ENV" = "prod" ]; then \
