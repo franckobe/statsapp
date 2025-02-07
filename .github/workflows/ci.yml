@@ -21,8 +21,8 @@ jobs:
           key: ${{ secrets.VPS_DEPLOY_KEY }}
           script: |
             cd ${{ secrets.VPS_DEPLOY_DIR }}
-            touch toto.txt
             git pull origin main
+            echo ${{ secrets.PROD_ENV }} > .env
             docker compose down
             docker compose up -d --build
             docker system prune -af
