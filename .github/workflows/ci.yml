@@ -21,6 +21,7 @@ jobs:
           key: ${{ secrets.VPS_DEPLOY_KEY }}
           script: |
             cd ${{ secrets.VPS_DEPLOY_DIR }}
+            touch toto.txt
             git pull origin main
             docker compose down
             docker compose up -d --build
