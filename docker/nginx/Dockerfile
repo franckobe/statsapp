@@ -10,8 +10,8 @@ COPY ./docker/nginx/conf/default.conf /etc/nginx/conf.d/default.conf
 COPY ./docker/nginx/conf/ssl.conf /etc/nginx/conf.d/ssl.conf
 
 # Déplacer ssl.conf uniquement si APP_ENV=prod
-RUN if [ "$APP_ENV" = "prod" ]; then \
-      mv /etc/nginx/conf.d/ssl.conf /etc/nginx/conf.d/ssl.conf.enabled; \
+RUN if [ "$APP_ENV" != "prod" ]; then \
+      rm /etc/nginx/conf.d/ssl.conf; \
     fi
 
 # Update and upgrade the system
