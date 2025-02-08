@@ -2,7 +2,7 @@ FROM php:8.3-fpm
 
 LABEL maintainer="Franck GARROS"
 # Met à jour les paquets et installe les dépendances nécessaires pour GD
-RUN apt-get update && apt-get upgrade
+RUN apt-get update && apt-get upgrade -y
 # Installe les dépendances nécessaires pour Composer et Symfony
 RUN apt-get update && apt-get install -y \
     zip unzip git libzip-dev poppler-utils libpq-dev \
