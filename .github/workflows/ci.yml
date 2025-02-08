@@ -30,4 +30,6 @@ jobs:
             docker compose build --build-arg APP_ENV=$APP_ENV
             docker compose up -d
             docker compose exec php php bin/console doctrine:migrations:migrate --no-interaction
+            docker compose exec php yarn install --frozen-lockfile
+            docker compose exec php yarn build
             docker system prune -af
