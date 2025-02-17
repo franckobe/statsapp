@@ -115,7 +115,17 @@ class GameFileTool
                 preg_match($regex1, $line, $matches);
 
                 if (!isset($matches[3])) {
-                    dd($line);
+                    // Cas joueur sans nom on récupère nom de l'équipe et numéro
+                    $regex1bis = '/^(\d+)\s+(\d+:\d+|NPJ)/u';
+                    preg_match($regex1bis, $line, $matchesBis);
+                    if(isset($matchesBis[1])){
+                        $regex1 = $regex1bis;
+                        $matches[2] = $currentTeam . " #" . $matchesBis[1];
+                        $matches[3] = $matchesBis[2];
+                    }
+                    else {
+                        dd($line);
+                    }
                 }
 
                 $minutes = 0;

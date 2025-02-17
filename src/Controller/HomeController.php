@@ -68,8 +68,14 @@ class HomeController extends AbstractController
             }
         }
 
-        $teamStats = $method !== CalculationMethod::MINUTE ? $teamStatsCollection->getAllTeamGamesStatsCalculated($method, $team) : null;
-        $opponentTeamsStats = $method !== CalculationMethod::MINUTE ? $opponentTeamStatsCollection->getAllOpponentTeamsGamesStatsCalculated($method) : null;
+        $teamStats = null;
+        $opponentTeamsStats = null;
+        if ($method !== CalculationMethod::MINUTE) {
+            $teamStats = $teamStatsCollection->getAllTeamGamesStatsCalculated($method, $team);
+            $teamStats->plusMinus = $teamStats->plusMinus / 5;
+            $opponentTeamsStats = $opponentTeamStatsCollection->getAllOpponentTeamsGamesStatsCalculated($method);
+            $opponentTeamsStats->plusMinus = $opponentTeamsStats->plusMinus / 5;
+        }
 
         return [
             'stats' => $playersStats,
@@ -125,12 +131,17 @@ class HomeController extends AbstractController
             }
         }
 
+        $homeTeamTotals = $homeTeamGameStatsCollection->getAllTeamGamesStatsCalculated(CalculationMethod::SUM, $game->getHomeTeam());
+        $homeTeamTotals->plusMinus = $homeTeamTotals->plusMinus / 5;
+        $awayTeamTotals = $awayTeamGameStatsCollection->getAllTeamGamesStatsCalculated(CalculationMethod::SUM, $game->getAwayTeam());
+        $awayTeamTotals->plusMinus = $awayTeamTotals->plusMinus / 5;
+
         return [
             'game' => $game,
             'boxscore' => $boxScore,
             'totals' => [
-                $game->getHomeTeam()->getId() => $homeTeamGameStatsCollection->getAllTeamGamesStatsCalculated(CalculationMethod::SUM, $game->getHomeTeam()),
-                $game->getAwayTeam()->getId() => $awayTeamGameStatsCollection->getAllTeamGamesStatsCalculated(CalculationMethod::SUM, $game->getAwayTeam()),
+                $game->getHomeTeam()->getId() => $homeTeamTotals,
+                $game->getAwayTeam()->getId() => $awayTeamTotals,
             ],
             'breadcrumb' => [
                 [
