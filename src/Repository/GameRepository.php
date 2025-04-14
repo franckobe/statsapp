@@ -20,15 +20,24 @@ class GameRepository extends ServiceEntityRepository
 
     public function findAllGames(): array
     {
-        return $this->findBy([], ['number' => 'ASC']);
+        return $this->findBy([], [
+            'phase' => 'ASC',
+            'number' => 'ASC'
+        ]);
     }
 
     public function findOneOrInsert(int $gameNumber, Team $homeTeam, Team $awayTeam, int $homeScore, int $awayScore): Game
     {
         $game = $this->findOneBy(['number' => $gameNumber]);
+        $phase = 1;
+        if ($game && ($game->getHomeTeam() !== $homeTeam || $game->getAwayTeam() !== $awayTeam)) {
+            $game = null;
+            $phase = 2;
+        }
         if (!$game) {
             $game = new Game();
             $game->setNumber($gameNumber);
+            $game->setPhase($phase);
             $game->setHomeTeam($homeTeam);
             $game->setAwayTeam($awayTeam);
             $game->setHomeScore($homeScore);

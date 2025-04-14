@@ -68,7 +68,7 @@ logs: ## 📜 Show logs of all containers
 #######################################
 ## 🔧 Symfony
 #######################################
-.PHONY: init-project init-database database-create database-drop database-migrate
+.PHONY: init-project init-database database-create database-drop database-migrations database-migrate
 
 init-project: ## 📦 Create Symfony project inside the container
 	@echo "Creating Symfony project..."
@@ -88,6 +88,10 @@ database-create: ## Create the database
 database-drop: ## Drop the database
 	@echo "Dropping database..."
 	$(DOCKER_EXEC) doctrine:database:drop --force --if-exists
+
+database-migrations: ## Generate migration
+	@echo "Genereting migrations..."
+	$(DOCKER_EXEC)  make:migration
 
 database-migrate: ## Migrate the database
 	@echo "Migrating database..."

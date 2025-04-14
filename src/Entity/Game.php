@@ -18,6 +18,9 @@ class Game
     #[ORM\Column]
     private ?int $number = null;
 
+    #[ORM\Column]
+    private ?int $phase = null;
+
     #[ORM\ManyToOne(inversedBy: 'games')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Team $homeTeam = null;
@@ -57,6 +60,16 @@ class Game
         $this->number = $number;
 
         return $this;
+    }
+
+    public function getPhase(): ?int
+    {
+        return $this->phase;
+    }
+
+    public function setPhase(?int $phase): void
+    {
+        $this->phase = $phase;
     }
 
     public function getHomeTeam(): ?Team

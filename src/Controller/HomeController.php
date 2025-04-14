@@ -182,7 +182,10 @@ class HomeController extends AbstractController
         $playerTotals = $gameStatsCollection->getAllPlayerGamesStatsCalculated(CalculationMethod::SUM, $player);
         $playerAveragesPer40min = $gameStatsCollection->getAllPlayerGamesStatsCalculated(CalculationMethod::MINUTE, $player);
 
-        $criteria = Criteria::create()->orderBy(["game.number" => Order::Ascending]);
+        $criteria = Criteria::create()->orderBy([
+            "game.phase" => Order::Ascending,
+            "game.number" => Order::Ascending
+        ]);
         $sortedResults = $player->getGameStats()->matching($criteria);
         $playerGamesStats = GameStatsCollectionDTO::fromCollection($sortedResults);
 

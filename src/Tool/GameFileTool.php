@@ -111,7 +111,7 @@ class GameFileTool
 
                 $gameStatsObject = new GameStatsObject();
 
-                $regex1 = '/^(\d+)\s+([\p{L}\s]+)(\d+:\d+|NPJ)/u';
+                $regex1 = '/^(\d+)\s+([\p{L}\s-]+)(\d+:\d+|NPJ)/u';
                 preg_match($regex1, $line, $matches);
 
                 if (!isset($matches[3])) {

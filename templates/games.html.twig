@@ -2,7 +2,12 @@
 
 {% block main %}
     <div class="flex flex-col gap-2 max-w-4xl mx-auto">
+        {% set currentPhase = null %}
         {% for game in games %}
+            {% if game.phase is not same as(currentPhase) %}
+                <h1>Phase {{ game.phase }}</h1>
+                {% set currentPhase = game.phase %}
+            {% endif %}
             <h2>Journée {{ game.number }}</h2>
             <a href="{{ path('game', {gameId: game.id}) }}" class="flex w-full gap-4 border border-purple-200 rounded-2xl p-2 items-center hover:bg-gray-900">
                 <div class="flex flex-col items-end w-1/2">
