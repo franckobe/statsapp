@@ -75,8 +75,9 @@ class GameStatsCollection
         if ($player === null) {
             $gamesList = [];
             foreach($gamesPlayed as $game) {
-                if (!in_array($game->getGame()->getNumber(), $gamesList)) {
-                    $gamesList[] = $game->getGame()->getNumber();
+                $gameKey = $game->getGame()->getPhase() . '-' . $game->getGame()->getNumber();
+                if (!in_array($gameKey, $gamesList)) {
+                    $gamesList[] = $gameKey;
                 }
             }
             $nbGamesPlayed = count($gamesList);
